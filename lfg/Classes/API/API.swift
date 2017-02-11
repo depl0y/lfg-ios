@@ -14,71 +14,71 @@ import RealmSwift
 /// Class for managing calls to the API
 class API {
 
-    /// The base URL used to talk to the LFG API
-    let baseUrl = "https://lfg.pub/api/v2/"
+	/// The base URL used to talk to the LFG API
+	let baseUrl = "https://lfg.pub/api/v2/"
 
-    /// Fetches the activities and stores them in the database
-    ///
+	/// Fetches the activities and stores them in the database
+	///
 	/// - Parameters:
 	///   - completed: A callback, which is performed when the request is complete (or fails)
-    public func activities(completed: @escaping (_ success: Bool) -> Void) {
-        let command = "activities"
+	public func activities(completed: @escaping (_ success: Bool) -> Void) {
+		let command = "activities"
 
-        let url = "\(baseUrl)\(command)"
+		let url = "\(baseUrl)\(command)"
 
-        log.debug("GET \(url)")
+		log.debug("GET \(url)")
 
-        Alamofire.request(url).responseObject { (response: DataResponse<ActivitiesResponse>) in
-            if let result = response.result.value {
-                do {
-                    let realm = try Realm()
-                    try realm.write {
+		Alamofire.request(url).responseObject { (response: DataResponse<ActivitiesResponse>) in
+			if let result = response.result.value {
+				do {
+					let realm = try Realm()
+					try realm.write {
 						let permalinks = result.activities.map { $0.permalink }
 						Activity.removeExcept(realm: realm, activities: permalinks)
-                        _ = result.activities.map { $0.createOrUpdate(realm: realm) }
-                    }
-                    completed(true)
-                } catch {
-                    log.debug("Error writing to realm")
-                    completed(false)
-                }
-            } else {
-                completed(false)
-            }
-        }
-    }
+						_ = result.activities.map { $0.createOrUpdate(realm: realm) }
+					}
+					completed(true)
+				} catch {
+					log.debug("Error writing to realm")
+					completed(false)
+				}
+			} else {
+				completed(false)
+			}
+		}
+	}
 
-    /// Gets the field configuration for an activity and stores it in the database
-    ///
-    /// - Parameters:
-    ///   - activity: The activity to get the configuration for
-    ///   - completed: A callback, which is performed when the request is complete (or fails)
-    public func configuration(activity: Activity, completed: @escaping (_ success: Bool) -> Void) {
-        let url = "\(baseUrl)activity/\(activity.permalink)"
+	/// Gets the field configuration for an activity and stores it in the database
+	///
+	/// - Parameters:
+	///   - activity: The activity to get the configuration for
+	///   - completed: A callback, which is performed when the request is complete (or fails)
+	public func configuration(activity: Activity, completed: @escaping (_ success: Bool) -> Void) {
+		let url = "\(baseUrl)activity/\(activity.permalink)"
 
-        log.debug("GET \(url)")
+		log.debug("GET \(url)")
 
-        Alamofire.request(url).responseObject { (response: DataResponse<ActivityResponse>) in
-            if response.result.value != nil {
+		Alamofire.request(url).responseObject { (response: DataResponse<ActivityResponse>) in
+			if response.result.value != nil {
 
-                do {
-                    let realm = try Realm()
+				do {
+					let realm = try Realm()
 
-                    try realm.write {
+					try realm.write {
 						let fieldGroupNames = response.result.value!.fieldGroups.map { $0.name }
 						FieldGroup.removeExcept(realm: realm, activity: activity, names: fieldGroupNames)
 						_ = response.result.value!.fieldGroups.map { $0.createOrUpdate(realm: realm, activity: activity) }
-                    }
-                    completed(true)
-                } catch {
-                    log.debug("Error writing to realm")
-                    completed(false)
-                }
-            } else {
-                completed(false)
-            }
-        }
-    }
+					}
+					completed(true)
+				} catch {
+					log.debug("Error writing to realm")
+					completed(false)
+				}
+			} else {
+				completed(false)
+			}
+		}
+	}
 
 	/// Query the requests for an activity
 	///
