@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AB498B891E4EFA2300B9DD10 /* FontAwesome.otf in Resources */ = {isa = PBXBuildFile; fileRef = AB498B881E4EFA2300B9DD10 /* FontAwesome.otf */; };
 		AB4A41F41E4AEDF900EB43C9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4A41F31E4AEDF900EB43C9 /* AppDelegate.swift */; };
 		AB4A41F91E4AEDF900EB43C9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB4A41F71E4AEDF900EB43C9 /* Main.storyboard */; };
 		AB4A41FB1E4AEDF900EB43C9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB4A41FA1E4AEDF900EB43C9 /* Assets.xcassets */; };
@@ -33,7 +32,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AB498B881E4EFA2300B9DD10 /* FontAwesome.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome.otf; sourceTree = "<group>"; };
 		AB4A41F01E4AEDF900EB43C9 /* lfg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = lfg.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB4A41F31E4AEDF900EB43C9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AB4A41F81E4AEDF900EB43C9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -94,17 +92,8 @@
 		AB498B861E4EFA2300B9DD10 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				AB498B871E4EFA2300B9DD10 /* Fonts */,
 			);
 			path = Assets;
-			sourceTree = "<group>";
-		};
-		AB498B871E4EFA2300B9DD10 /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				AB498B881E4EFA2300B9DD10 /* FontAwesome.otf */,
-			);
-			path = Fonts;
 			sourceTree = "<group>";
 		};
 		AB4A41E71E4AEDF900EB43C9 = {
@@ -262,7 +251,6 @@
 			files = (
 				AB4A41FE1E4AEDF900EB43C9 /* LaunchScreen.storyboard in Resources */,
 				AB4A41FB1E4AEDF900EB43C9 /* Assets.xcassets in Resources */,
-				AB498B891E4EFA2300B9DD10 /* FontAwesome.otf in Resources */,
 				AB4A41F91E4AEDF900EB43C9 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
