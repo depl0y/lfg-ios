@@ -12,7 +12,7 @@ import RealmSwift
 import JKNotificationPanel
 import PureLayout
 
-class ActivityViewController: UIViewController {
+class ActivityViewController: UIViewController, UITableViewDataSource {
 
     var activity: Activity!
     var cableChannel: Channel?
@@ -20,6 +20,8 @@ class ActivityViewController: UIViewController {
 	let panel = JKNotificationPanel()
 
 	let tableView = UITableView()
+
+	var requests = [Request]()
 
     init(activity: Activity) {
         super.init(nibName: nil, bundle: nil)
@@ -36,6 +38,7 @@ class ActivityViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+		self.tableView.dataSource = self
 		self.view.addSubview(self.tableView)
 		self.tableView.autoPinEdgesToSuperviewEdges()
 
@@ -46,6 +49,13 @@ class ActivityViewController: UIViewController {
             if success {
                 self.refreshFilters()
             }
+
+			api.query(activity: self.activity, filters: [Int: Any](), completed: { (success, requests) in
+				if requests != nil {
+					self.requests = requests!
+					self.tableView.reloadData()
+				}
+			})
         }
 
 		let settingsButton = UIBarButtonItem(title: "E", style: .plain, target: self, action: #selector(self.showSettings(sender:)))
@@ -66,6 +76,23 @@ class ActivityViewController: UIViewController {
 
     }
 
+	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+		return self.requests.count
+	}
+
+	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		var cell = tableView.dequeueReusableCell(withIdentifier: "request-cell")
+
+		if cell == nil {
+			cell = UITableViewCell(style: .default, reuseIdentifier: "request-cell")
+		}
+
+		let request = self.requests[indexPath.row]
+		cell!.textLabel?.text = request.title
+		return cell!
+
+	}
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -79,7 +106,7 @@ class ActivityViewController: UIViewController {
 		if activity.subscribe {
 			SocketConnection.sharedInstance.openChannel(channelName: self.activity.permalink, subscribed: { (channel) in
 				channel.onReceive = { (JSON: Any?, error: Error?) in
-					log.debug("\(JSON)")
+					//log.debug("\(JSON)")
 				}
 			})
 		} else {

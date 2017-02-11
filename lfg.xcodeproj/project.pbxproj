@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB498B8B1E4F375500B9DD10 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB498B8A1E4F375500B9DD10 /* Request.swift */; };
+		AB498B8D1E4F422A00B9DD10 /* QueryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB498B8C1E4F422A00B9DD10 /* QueryResponse.swift */; };
+		AB498B8F1E4F458600B9DD10 /* FieldValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB498B8E1E4F458600B9DD10 /* FieldValue.swift */; };
+		AB498B911E4F470200B9DD10 /* ValueFinderTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB498B901E4F470200B9DD10 /* ValueFinderTransformer.swift */; };
 		AB4A41F41E4AEDF900EB43C9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4A41F31E4AEDF900EB43C9 /* AppDelegate.swift */; };
 		AB4A41F91E4AEDF900EB43C9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB4A41F71E4AEDF900EB43C9 /* Main.storyboard */; };
 		AB4A41FB1E4AEDF900EB43C9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB4A41FA1E4AEDF900EB43C9 /* Assets.xcassets */; };
@@ -32,6 +36,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AB498B8A1E4F375500B9DD10 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
+		AB498B8C1E4F422A00B9DD10 /* QueryResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryResponse.swift; sourceTree = "<group>"; };
+		AB498B8E1E4F458600B9DD10 /* FieldValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldValue.swift; sourceTree = "<group>"; };
+		AB498B901E4F470200B9DD10 /* ValueFinderTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ValueFinderTransformer.swift; path = Transformers/ValueFinderTransformer.swift; sourceTree = "<group>"; };
 		AB4A41F01E4AEDF900EB43C9 /* lfg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = lfg.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB4A41F31E4AEDF900EB43C9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AB4A41F81E4AEDF900EB43C9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -147,6 +155,7 @@
 				ABD2CA5A1E4C61D500016887 /* ActivityResponse.swift */,
 				AB7DC0B91E4AF04300B04AB2 /* API.swift */,
 				AB9032901E4CA20D00FE9A69 /* SocketConnection.swift */,
+				AB498B8C1E4F422A00B9DD10 /* QueryResponse.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -169,7 +178,9 @@
 				ABFDC0C11E4B8DDC00570645 /* Field.swift */,
 				ABFDC0C31E4B8FA200570645 /* FieldGroup.swift */,
 				ABFDC0C51E4B901800570645 /* FieldOption.swift */,
+				AB498B8E1E4F458600B9DD10 /* FieldValue.swift */,
 				ABFDC0BD1E4B8CD900570645 /* Language.swift */,
+				AB498B8A1E4F375500B9DD10 /* Request.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -180,6 +191,7 @@
 				ABFDC0CA1E4C459E00570645 /* DateTransformer.swift */,
 				ABD2CA5E1E4C68D100016887 /* DatatypeTransformer.swift */,
 				ABD2CA601E4C6A3B00016887 /* ListTransformer.swift */,
+				AB498B901E4F470200B9DD10 /* ValueFinderTransformer.swift */,
 			);
 			name = Transformers;
 			sourceTree = "<group>";
@@ -347,7 +359,11 @@
 				ABFDC0BE1E4B8CD900570645 /* Language.swift in Sources */,
 				ABD2CA5D1E4C672200016887 /* DataTypes.swift in Sources */,
 				ABD2CA5F1E4C68D100016887 /* DatatypeTransformer.swift in Sources */,
+				AB498B911E4F470200B9DD10 /* ValueFinderTransformer.swift in Sources */,
+				AB498B8D1E4F422A00B9DD10 /* QueryResponse.swift in Sources */,
 				ABFDC0C01E4B8D4600570645 /* ActivityGroup.swift in Sources */,
+				AB498B8B1E4F375500B9DD10 /* Request.swift in Sources */,
+				AB498B8F1E4F458600B9DD10 /* FieldValue.swift in Sources */,
 				AB7DC0BA1E4AF04300B04AB2 /* API.swift in Sources */,
 				ABFDC0BC1E4B8BB800570645 /* Activity.swift in Sources */,
 				AB4A41F41E4AEDF900EB43C9 /* AppDelegate.swift in Sources */,

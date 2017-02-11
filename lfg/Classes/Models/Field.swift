@@ -11,7 +11,7 @@ import RealmSwift
 import Realm
 import ObjectMapper
 
-public class Field: Object, Mappable {
+public class Field: Object, Mappable, ValueFinder {
 
 	dynamic var lid: Int = 0
 
@@ -159,4 +159,16 @@ public class Field: Object, Mappable {
 		}
 	}
 
+	public static func findByValue(value: Any) -> Field? {
+		if let vid = value as? Int {
+			do {
+				let realm = try Realm()
+				let groups = realm.objects(Field.self).filter("lid = %d", vid)
+				return groups.first
+			} catch {
+				log.error("Error occured while fetching REALM")
+			}
+		}
+		return nil
+	}
 }

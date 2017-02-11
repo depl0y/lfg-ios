@@ -69,4 +69,19 @@ class API {
         }
     }
 
+	public func query(activity: Activity, filters: [Int: Any], completed: @escaping (_ success: Bool, _ requests: [Request]?) -> Void) {
+		let url = "\(baseUrl)requests/\(activity.permalink)/query"
+
+		log.debug("POST \(url)")
+
+		Alamofire.request(url, method: .post).responseObject { (response: DataResponse<QueryResponse>) in
+			if let result = response.result.value {
+				completed(true, result.requests)
+			}
+			else {
+				completed(false, nil)
+			}
+		}
+	}
+
 }

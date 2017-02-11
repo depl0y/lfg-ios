@@ -79,6 +79,10 @@ public class Activity: Object, Mappable {
 		realm.delete(self)
 	}
 
+	func allFields() -> [Field] {
+		return Array(self.fieldGroups).flatMap { Array($0.fields) }
+	}
+
 	private func copy(source: Activity, realm: Realm) {
 		self.name = source.name
 		self.icon = source.icon

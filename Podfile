@@ -14,6 +14,7 @@ target 'lfg' do
   pod 'Eureka', '~> 2.0.0-beta.1' #, :git => 'https://github.com/xmartlabs/Eureka.git', :branch => 'swift3.1'
   pod 'JKNotificationPanel'
   pod 'FontAwesome.swift'
+  pod 'TTRangeSlider'
 end
 
 post_install do |installer|

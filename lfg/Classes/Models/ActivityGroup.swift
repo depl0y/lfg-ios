@@ -11,7 +11,7 @@ import RealmSwift
 import Realm
 import ObjectMapper
 
-public class ActivityGroup: Object, Mappable {
+public class ActivityGroup: Object, Mappable, ValueFinder {
 
 	dynamic var lid: Int =  0
 	dynamic var name: String = ""
@@ -59,5 +59,18 @@ public class ActivityGroup: Object, Mappable {
 	private func copy(source: ActivityGroup, realm: Realm) {
 		self.name = source.name
 		self.icon = source.icon
+	}
+
+	public static func findByValue(value: Any) -> ActivityGroup? {
+		if let groupId = value as? Int {
+			do {
+				let realm = try Realm()
+				let groups = realm.objects(ActivityGroup.self).filter("lid = %d", groupId)
+				return groups.first
+			} catch {
+				log.error("Error occured while fetching REALM")
+			}
+		}
+		return nil
 	}
 }
