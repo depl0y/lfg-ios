@@ -1,0 +1,52 @@
+PODS:
+  - ActionCableClient (0.2.3):
+    - Starscream (~> 2.0.0)
+  - Alamofire (4.3.0)
+  - AlamofireObjectMapper (4.0.1):
+    - Alamofire (~> 4.1)
+    - ObjectMapper (~> 2.0)
+  - Eureka (2.0.0-beta.1)
+  - FontAwesome.swift (1.0.0)
+  - JKNotificationPanel (1.0.0)
+  - ObjectMapper (2.2.2)
+  - PureLayout (3.0.2)
+  - Realm (2.4.2):
+    - Realm/Headers (= 2.4.2)
+  - Realm/Headers (2.4.2)
+  - RealmSwift (2.4.2):
+    - Realm (= 2.4.2)
+  - Starscream (2.0.3)
+  - SwiftLint (0.16.1)
+  - SwiftyBeaver (1.1.1)
+
+DEPENDENCIES:
+  - ActionCableClient
+  - Alamofire (~> 4.3)
+  - AlamofireObjectMapper (~> 4.0)
+  - Eureka (~> 2.0.0-beta.1)
+  - FontAwesome.swift
+  - JKNotificationPanel
+  - ObjectMapper
+  - PureLayout
+  - RealmSwift
+  - SwiftLint
+  - SwiftyBeaver
+
+SPEC CHECKSUMS:
+  ActionCableClient: c8a466410d31bfa14e7a9c209b539c1e2d026a5f
+  Alamofire: 856a113053a7bc9cbe5d6367a555d773fc5cfef7
+  AlamofireObjectMapper: 842d2eed43a4d0593ff0110d54ac86a170c4519c
+  Eureka: d014adf16406745e1a78d5790ea37ed130a0a8e5
+  FontAwesome.swift: 2d32a3d62195343c2004b7c9043294ed2948553a
+  JKNotificationPanel: 2ed551f072be7f54e23a8c2526149c69ab23da9a
+  ObjectMapper: 9e385c2295bcc4e16eabbcfc85db801442bba545
+  PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
+  Realm: d27b758e12d62a3371879a065d4c40aa212c5a54
+  RealmSwift: 9556c0fe0f0cfecacfb755ae9e68ff379fc6bead
+  Starscream: 3fdd5c277e57cca6b5c406d274e3f34a7c88f2ce
+  SwiftLint: b8b683208cc09640898f16318a7a452274e91f61
+  SwiftyBeaver: 2b68694df862381235e32bcfc4ec991e26bf131d
+
+PODFILE CHECKSUM: 7a02f2a90ad581b779e929321efdf7bf1b53a020
+
+COCOAPODS: 1.2.0

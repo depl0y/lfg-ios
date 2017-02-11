@@ -1,0 +1,7 @@
+line_length: 150
+
+force_try:
+  severity: warning # explicitly
+
+excluded:
+  - Pods
