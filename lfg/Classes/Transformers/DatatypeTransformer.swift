@@ -11,18 +11,18 @@ import ObjectMapper
 
 public class DatatypeTransformer: TransformType {
 
-    public typealias Object = DataType
-    public typealias JSON = String
+	public typealias Object = DataType
+	public typealias JSON = String
 
-    public func transformFromJSON(_ value: Any?) -> DataType? {
-        if let v = value as? String {
-            return DataType.fromString(name: v)
-        }
-        return DataType.Unknown
-    }
+	public func transformFromJSON(_ value: Any?) -> DataType? {
+		if let v = value as? String {
+			return DataType.fromString(name: v)
+		}
+		return DataType.Unknown
+	}
 
-    public func transformToJSON(_ value: DataType?) -> String? {
-        return nil
-    }
+	public func transformToJSON(_ value: DataType?) -> String? {
+		return nil
+	}
 
 }

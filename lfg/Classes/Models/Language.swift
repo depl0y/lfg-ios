@@ -11,11 +11,11 @@ import RealmSwift
 
 public class Language: Object {
 
-    dynamic var lid: Int = 0
-    dynamic var identifier: String = ""
-    dynamic var title: String = ""
+	dynamic var lid: Int = 0
+	dynamic var identifier: String = ""
+	dynamic var title: String = ""
 
-    public override static func primaryKey() -> String? {
-        return "lid"
-    }
+	public override static func primaryKey() -> String? {
+		return "lid"
+	}
 }

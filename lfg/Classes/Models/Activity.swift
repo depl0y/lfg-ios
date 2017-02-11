@@ -106,6 +106,6 @@ public class Activity: Object, Mappable {
 		objects.forEach { (o) in
 			o.remove(realm: realm)
 		}
-
+		
 	}
 }

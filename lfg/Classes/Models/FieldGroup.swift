@@ -13,31 +13,31 @@ import ObjectMapper
 
 public class FieldGroup: Object, Mappable {
 
-    dynamic var name: String = ""
-    dynamic var activity: Activity?
+	dynamic var name: String = ""
+	dynamic var activity: Activity?
 
-    var fields = List<Field>()
+	var fields = List<Field>()
 
-    public required init?(map: Map) {
-        super.init()
-    }
+	public required init?(map: Map) {
+		super.init()
+	}
 
-    public required init() {
-        super.init()
-    }
+	public required init() {
+		super.init()
+	}
 
-    public required init(value: Any, schema: RLMSchema) {
-        fatalError("init(value:schema:) has not been implemented")
-    }
+	public required init(value: Any, schema: RLMSchema) {
+		fatalError("init(value:schema:) has not been implemented")
+	}
 
-    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        super.init(realm: realm, schema: schema)
-    }
+	public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+		super.init(realm: realm, schema: schema)
+	}
 
-    public func mapping(map: Map) {
-        name <- map["name"]
-        fields <- (map["objects"], ListTransform<Field>())
-    }
+	public func mapping(map: Map) {
+		name <- map["name"]
+		fields <- (map["objects"], ListTransform<Field>())
+	}
 
 	public func createOrUpdate(realm: Realm, activity: Activity) -> FieldGroup {
 		let predicate = NSPredicate(format: "name = %@ AND activity = %@", self.name, activity)
@@ -82,15 +82,15 @@ public class FieldGroup: Object, Mappable {
 		}
 	}
 
-    public static func removeExcept(realm: Realm, activity: Activity, names: [String]) {
-        let predicate = NSPredicate(format: "activity = %@ AND NOT (name in %@)", activity, names)
-        let objects = realm.objects(FieldGroup.self).filter(predicate)
+	public static func removeExcept(realm: Realm, activity: Activity, names: [String]) {
+		let predicate = NSPredicate(format: "activity = %@ AND NOT (name in %@)", activity, names)
+		let objects = realm.objects(FieldGroup.self).filter(predicate)
 
-        log.verbose("Found \(objects.count) objects for removal")
+		log.verbose("Found \(objects.count) objects for removal")
 
-        objects.forEach { (o) in
+		objects.forEach { (o) in
 			o.remove(realm: realm)
-        }
+		}
 
-    }
+	}
 }

@@ -13,21 +13,21 @@ import ObjectMapper
 
 public class FieldOption: Object, Mappable {
 
-    dynamic var lid: Int = 0
-    dynamic var permalink: String = ""
-    dynamic var name: String = ""
-    dynamic var group: String?
+	dynamic var lid: Int = 0
+	dynamic var permalink: String = ""
+	dynamic var name: String = ""
+	dynamic var group: String?
 
-    dynamic var lfg: Bool = true
-    dynamic var lfm: Bool = true
+	dynamic var lfg: Bool = true
+	dynamic var lfm: Bool = true
 
-    dynamic var sortorder: Int = 0
+	dynamic var sortorder: Int = 0
 
 	dynamic var field: Field?
 
-    public override static func primaryKey() -> String? {
-        return "lid"
-    }
+	public override static func primaryKey() -> String? {
+		return "lid"
+	}
 
 	public required init?(map: Map) {
 		super.init()
