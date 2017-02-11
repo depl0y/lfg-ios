@@ -9,8 +9,10 @@
 import Foundation
 import ActionCableClient
 
+/// Singleton class used to set up a websocket connection to the server
 public class SocketConnection {
 
+    /// Singleton....
     static let sharedInstance = SocketConnection()
 
     private var client = ActionCableClient(url: URL(string: "wss://lfg.pub/cable")!)
@@ -28,6 +30,11 @@ public class SocketConnection {
         self.client.connect()
     }
 
+	/// Opens a channel to the server, when a channel is already open, it will close that first
+	///
+	/// - Parameters:
+	///   - channelName: The name of the channel that needs to be opened
+	///   - subscribed: Callback for when the subscription is complete
 	public func openChannel(channelName: String, subscribed: @escaping (_ channel: Channel) -> Void) {
         let channelIdentifier = ["activity": channelName]
 
@@ -54,6 +61,7 @@ public class SocketConnection {
 		}
 	}
 
+	/// Close the currently subscribed channel
 	public func closeChannel() {
 		if self.connectedChannel != nil && self.connectedChannel!.isSubscribed {
 			self.connectedChannel!.unsubscribe()
