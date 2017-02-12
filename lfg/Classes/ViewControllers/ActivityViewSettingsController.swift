@@ -55,8 +55,28 @@ class ActivityViewSettingsController: FormViewController {
 			}
 		}
 
+		let languageRow = PushRow<Language>("language") { row in
+			row.title = "Language"
+
+			do {
+				let realm = try Realm()
+				let languages = realm.objects(Language.self)
+				row.options = Array(languages)
+
+				if let groupId = self.filters[-3] as? Int {
+					row.value = languages.filter(NSPredicate(format: "lid = %d", groupId)).first
+				}
+
+			} catch {
+				log.error("Could not write tot realm")
+			}
+
+
+		}
+
 		generalSection.append(groupRow)
 		generalSection.append(lfgRow)
+		generalSection.append(languageRow)
 
 		self.form.append(generalSection)
 
@@ -88,7 +108,13 @@ class ActivityViewSettingsController: FormViewController {
 
 		if let pushRow = self.form.rowBy(tag: "lf_mode") as? PushRow<String> {
 			if pushRow.value != nil {
-				self.filters[-2] = pushRow.value!
+				self.filters[-2] = pushRow.value!.lowercased()
+			}
+		}
+
+		if let pushRow = self.form.rowBy(tag: "language") as? PushRow<Language> {
+			if pushRow.value != nil {
+				self.filters[-3] = pushRow.value!.lid
 			}
 		}
 

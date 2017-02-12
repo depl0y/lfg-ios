@@ -36,6 +36,7 @@ class API {
 						let permalinks = result.activities.map { $0.permalink }
 						Activity.removeExcept(realm: realm, activities: permalinks)
 						_ = result.activities.map { $0.createOrUpdate(realm: realm) }
+						_ = result.languages.map { $0.createOrUpdate(realm: realm) }
 					}
 					completed(true)
 				} catch {
@@ -101,6 +102,8 @@ class API {
 				realKey = "group"
 			} else if key == -2 {
 				realKey = "lf_mode"
+			} else if key == -3 {
+				realKey = "language"
 			}
 			parameters[realKey] = value
 		}

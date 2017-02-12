@@ -12,12 +12,14 @@ import ObjectMapper
 public class ActivitiesResponse: Mappable {
 
     public var activities = [Activity]()
+	public var languages = [Language]()
 
     public required init?(map: Map) {
     }
 
     public func mapping(map: Map) {
         activities <- map["activities"]
+		languages <- map["languages"]
     }
 
 }

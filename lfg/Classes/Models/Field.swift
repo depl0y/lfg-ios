@@ -137,6 +137,7 @@ public class Field: Object, Mappable, ValueFinder {
 		let sourceOptions = source.options.map { $0.createOrUpdate(realm: realm, field: self) }
 
 		sourceOptions.forEach { (fieldOption) in
+			fieldOption.field = self
 			if !self.options.contains(fieldOption) {
 				self.options.append(fieldOption)
 			}
