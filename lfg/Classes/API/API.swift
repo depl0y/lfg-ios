@@ -60,7 +60,6 @@ class API {
 
 		Alamofire.request(url).responseObject { (response: DataResponse<ActivityResponse>) in
 			if response.result.value != nil {
-
 				do {
 					let realm = try Realm()
 
@@ -86,16 +85,35 @@ class API {
 	///   - activity: The activity to find requests for
 	///   - filters: The filters the user has set up
 	///   - completed: A callback, which is performed when the request is complete, containing the requests for that activity
-	public func query(activity: Activity, filters: [Int: Any], completed: @escaping (_ success: Bool, _ requests: [Request]?) -> Void) {
+	public func query(activity: Activity, page: Int, perPage: Int, filters: [Int: Any], completed: @escaping (_ success: Bool, _ requests: [Request]?) -> Void) {
 		let url = "\(baseUrl)requests/\(activity.permalink)/query"
 
 		log.debug("POST \(url)")
 
-		Alamofire.request(url, method: .post).responseObject { (response: DataResponse<QueryResponse>) in
-			if let result = response.result.value {
-				completed(true, result.requests)
+		var parameters: [String: Any] = [
+			"page": page,
+			"per_page": perPage
+		]
+
+		filters.forEach { (key, value) in
+			var realKey = "\(key)"
+			if key == -1 {
+				realKey = "group"
+			} else if key == -2 {
+				realKey = "lf_mode"
 			}
-			else {
+			parameters[realKey] = value
+		}
+
+		log.verbose("Query parameters: \(parameters)")
+
+		Alamofire.request(url, method: .post, parameters: parameters).responseObject { (response: DataResponse<QueryResponse>) in
+			if let result = response.result.value {
+				result.requests.forEach({ (request) in
+					request.activity = activity
+				})
+				completed(true, result.requests)
+			} else {
 				completed(false, nil)
 			}
 		}

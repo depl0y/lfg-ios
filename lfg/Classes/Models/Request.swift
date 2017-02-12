@@ -17,12 +17,11 @@ public class Request: Mappable {
 	public var lfg: Bool = false
 	public var title: String = ""
 	public var timeStamp: Date!
-
 	public var username: String = ""
-
 	public var activityGroupMessageLink: String?
-
 	public var fieldValues = [FieldValue]()
+
+	public var activity: Activity?
 
 	public required init?(map: Map) {
 
@@ -32,12 +31,9 @@ public class Request: Mappable {
 		self.title <- map["title"]
 
 		self.activityGroup <- (map["activity_group.id"], ValueFinderTransformer<ActivityGroup>())
-
 		self.lfg <- map["lfg"]
 		self.isPlanned <- map["is_planned"]
-
 		self.activityGroupMessageLink <- map["activity_group_link"]
-
 		self.fieldValues <- map["definitions"] //, ValueFinderTransformer<FieldValue>())
 
 		self.timeStamp <- (map["timestamp"], DateTransformer(format: "yyyy-MM-dd'T'HH:mm:ss.SSSz"))

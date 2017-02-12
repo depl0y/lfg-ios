@@ -38,10 +38,10 @@ public class FieldValue: Mappable {
 	public func mapping(map: Map) {
 		self.idType <- map["id"]
 
-		if let vid = self.idType as? Int {
+		if self.idType as? Int != nil {
 			self.field <- (map["id"], ValueFinderTransformer<Field>())
-		} else if let vid = self.idType as? String {
-			log.debug("\(vid) is string, parse exception")
+		} else if self.idType as? String != nil {
+			//log.debug("\(vid) is string, parse exception")
 		}
 
 	}

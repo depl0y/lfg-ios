@@ -43,6 +43,10 @@ public class ActivityGroup: Object, Mappable, ValueFinder {
 		return "lid"
 	}
 
+	public override var description: String {
+		return self.name
+	}
+
 	func createOrUpdate(realm: Realm) -> ActivityGroup {
 		let groups = realm.objects(ActivityGroup.self).filter("lid = \(self.lid)")
 

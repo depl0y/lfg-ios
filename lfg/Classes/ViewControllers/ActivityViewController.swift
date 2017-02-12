@@ -14,8 +14,8 @@ import PureLayout
 
 class ActivityViewController: UIViewController, UITableViewDataSource {
 
-    var activity: Activity!
-    var cableChannel: Channel?
+	var activity: Activity!
+	var cableChannel: Channel?
 
 	let panel = JKNotificationPanel()
 
@@ -23,40 +23,29 @@ class ActivityViewController: UIViewController, UITableViewDataSource {
 
 	var requests = [Request]()
 
-    init(activity: Activity) {
-        super.init(nibName: nil, bundle: nil)
-        self.activity = activity
+	var filters = [Int: Any]()
+
+	init(activity: Activity) {
+		super.init(nibName: nil, bundle: nil)
+		self.activity = activity
 		self.panel.timeUntilDismiss = 5
 		self.title = activity.name
 
-    }
+	}
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+	required init?(coder aDecoder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+	override func viewDidLoad() {
+		super.viewDidLoad()
 
 		self.tableView.dataSource = self
 		self.view.addSubview(self.tableView)
 		self.tableView.autoPinEdgesToSuperviewEdges()
 
-		setupRealtimeConnection()
-
-        let api = API()
-        api.configuration(activity: self.activity) { (success) in
-            if success {
-                self.refreshFilters()
-            }
-
-			api.query(activity: self.activity, filters: [Int: Any](), completed: { (success, requests) in
-				if requests != nil {
-					self.requests = requests!
-					self.tableView.reloadData()
-				}
-			})
-        }
+		self.setupRealtimeConnection()
+		self.query()
 
 		let settingsButton = UIBarButtonItem(title: "E", style: .plain, target: self, action: #selector(self.showSettings(sender:)))
 
@@ -66,15 +55,31 @@ class ActivityViewController: UIViewController, UITableViewDataSource {
 		settingsButton.title = String.fontAwesomeIcon(name: .search)
 
 		self.navigationItem.rightBarButtonItem = settingsButton
-    }
+	}
 
 	override func viewWillAppear(_ animated: Bool) {
 		setupRealtimeConnection()
 	}
 
-    override func viewWillDisappear(_ animated: Bool) {
+	override func viewWillDisappear(_ animated: Bool) {
 
-    }
+	}
+
+	private func query() {
+		let api = API()
+		api.configuration(activity: self.activity) { (success) in
+			if success {
+				self.refreshFilters()
+			}
+
+			api.query(activity: self.activity, page: 1, perPage: 20, filters: self.filters, completed: { (success, requests) in
+				if success && requests != nil {
+					self.requests = requests!
+					self.tableView.reloadData()
+				}
+			})
+		}
+	}
 
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		return self.requests.count
@@ -93,14 +98,14 @@ class ActivityViewController: UIViewController, UITableViewDataSource {
 
 	}
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+	override func didReceiveMemoryWarning() {
+		super.didReceiveMemoryWarning()
+		// Dispose of any resources that can be recreated.
+	}
 
-    private func refreshFilters() {
+	private func refreshFilters() {
 
-    }
+	}
 
 	private func setupRealtimeConnection() {
 		if activity.subscribe {
@@ -115,7 +120,14 @@ class ActivityViewController: UIViewController, UITableViewDataSource {
 	}
 
 	@objc private func showSettings(sender: Any) {
-		let nav = UINavigationController(rootViewController: ActivityViewSettingsController(activity: self.activity))
+
+		let vc = ActivityViewSettingsController(activity: self.activity, filters: self.filters) { (filters) in
+			self.filters = filters
+			self.query()
+		}
+
+		let nav = UINavigationController(rootViewController: vc)
+
 		self.present(nav, animated: true) {
 		}
 	}
