@@ -23,6 +23,8 @@ class ActivitiesViewController: UIViewController, UITableViewDataSource, UITable
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
+		self.sortPopular = UserDefaults.standard.bool(forKey: "sorting")
+
 		self.loadActivities()
 
 		self.view.addSubview(self.tableView)
@@ -69,6 +71,7 @@ class ActivitiesViewController: UIViewController, UITableViewDataSource, UITable
 
 		let activity = self.activities[indexPath.row]
 		cell!.textLabel?.text = activity.name
+		cell!.textLabel?.font = UIFont.latoWithSize(size: 16)
 
 		return cell!
 	}
@@ -84,7 +87,6 @@ class ActivitiesViewController: UIViewController, UITableViewDataSource, UITable
 		api.activities { (success) in
 			if success {
 				self.loadActivities()
-				self.sortActivities()
 			}
 			self.refreshControl.endRefreshing()
 		}
@@ -98,6 +100,10 @@ class ActivitiesViewController: UIViewController, UITableViewDataSource, UITable
 		} else {
 			self.navigationItem.rightBarButtonItem!.title = String.fontAwesomeIcon(name: .sortAmountDesc)
 		}
+
+		UserDefaults.standard.set(self.sortPopular, forKey: "sorting")
+		UserDefaults.standard.synchronize()
+
 		self.sortActivities()
 	}
 
@@ -118,6 +124,7 @@ class ActivitiesViewController: UIViewController, UITableViewDataSource, UITable
 		do {
 			let realm = try Realm()
 			self.activities = Array(realm.objects(Activity.self))
+			self.sortActivities()
 		} catch {
 			log.error("Error opening realm")
 		}

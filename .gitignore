@@ -62,3 +62,5 @@ Carthage/Build
 # https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Gitignore.md
 
 Fastlane/
+/AppStore_com.sortedbits.lfgpub.mobileprovision
+/WLHE4B8DVJ.cer

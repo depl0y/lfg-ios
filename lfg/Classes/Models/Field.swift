@@ -10,8 +10,12 @@ import Foundation
 import RealmSwift
 import Realm
 import ObjectMapper
+import ionicons
 
 public class Field: Object, Mappable, ValueFinder {
+
+	static var enabledIcons = [String: UIImage]()
+	static var disabledIcons = [String: UIImage]()
 
 	dynamic var lid: Int = 0
 
@@ -42,6 +46,7 @@ public class Field: Object, Mappable, ValueFinder {
 	dynamic var valueSuffix: String?
 
 	dynamic var displayAsCheckboxes: Bool = false
+	dynamic var showInList: Bool = false
 
 	dynamic var fieldGroup: FieldGroup?
 	dynamic var activity: Activity?
@@ -57,7 +62,7 @@ public class Field: Object, Mappable, ValueFinder {
 	}
 
 	public required init(value: Any, schema: RLMSchema) {
-		fatalError("init(value:schema:) has not been implemented")
+		super.init(value: value, schema: schema)
 	}
 
 	public required init(realm: RLMRealm, schema: RLMObjectSchema) {
@@ -66,6 +71,33 @@ public class Field: Object, Mappable, ValueFinder {
 
 	public override static func primaryKey() -> String? {
 		return "lid"
+	}
+
+	override public static func ignoredProperties() -> [String] {
+		return ["iconImage", "_iconImage"]
+	}
+
+	public func iconImage(enabled: Bool) -> UIImage? {
+		if self.icon == nil {
+			return nil
+		}
+
+		let suffix = (enabled) ? "enabled" : "disabled"
+		let backgroundColor = (enabled) ? 0x249381 : 0xd5d5d5
+
+		let iconName = "\(self.icon!)-\(suffix)"
+
+		if let image = IconManager.sharedInstance.get(key: iconName) {
+			return image
+		} else {
+			return IconManager.sharedInstance.create(
+				key: iconName,
+				iconName: self.icon!,
+				backgroundColor: UIColor(netHex: backgroundColor),
+				color: UIColor.white,
+				iconSize: 60,
+				imageSize: CGSize(width: 80, height: 80))
+		}
 	}
 
 	public func mapping(map: Map) {
@@ -87,6 +119,7 @@ public class Field: Object, Mappable, ValueFinder {
 		valuePrefix <- map["value_prefix"]
 		valueSuffix <- map["value_suffix"]
 		displayAsCheckboxes <- map["display_as_checkboxes"]
+		showInList <- map["show_in_list"]
 
 		options <- (map["options"], ListTransform<FieldOption>())
 	}
@@ -130,6 +163,7 @@ public class Field: Object, Mappable, ValueFinder {
 		self.valuePrefix = source.valuePrefix
 		self.valueSuffix = source.valueSuffix
 		self.displayAsCheckboxes = source.displayAsCheckboxes
+		self.showInList = source.showInList
 
 		let optionIds = Array(source.options).map { $0.lid }
 		FieldOption.removeExcept(realm: realm, field: self, options: optionIds)
@@ -152,9 +186,6 @@ public class Field: Object, Mappable, ValueFinder {
 	public static func removeExcept(realm: Realm, fieldGroup: FieldGroup, fields: [Int]) {
 		let predicate = NSPredicate(format: "fieldGroup = %@ AND NOT (lid in %@)", fieldGroup, fields)
 		let objects = realm.objects(Field.self).filter(predicate)
-
-		log.verbose("Found \(objects.count) objects for removal")
-
 		objects.forEach { (o) in
 			o.remove(realm: realm)
 		}

@@ -70,8 +70,6 @@ class ActivityViewSettingsController: FormViewController {
 			} catch {
 				log.error("Could not write tot realm")
 			}
-
-
 		}
 
 		generalSection.append(groupRow)
@@ -91,71 +89,50 @@ class ActivityViewSettingsController: FormViewController {
 					} else {
 						self.disableAlwaysConnected()
 					}
-				}.cellSetup { cell, row in
+				}.cellSetup { _, row in
 					row.value = self.activity.subscribe
 		}
 	}
 
 	private func saveFilterSettings() {
-
 		self.filters = [Int: Any]()
 
-		if let pushRow = self.form.rowBy(tag: "activity_group") as? PushRow<ActivityGroup> {
-			if pushRow.value != nil {
-				self.filters[-1] = pushRow.value!.lid
-			}
+		if let pushRow = self.form.rowBy(tag: "activity_group") as? PushRow<ActivityGroup>, pushRow.value != nil {
+			self.filters[-1] = pushRow.value!.lid
 		}
 
-		if let pushRow = self.form.rowBy(tag: "lf_mode") as? PushRow<String> {
-			if pushRow.value != nil {
-				self.filters[-2] = pushRow.value!.lowercased()
-			}
+		if let pushRow = self.form.rowBy(tag: "lf_mode") as? PushRow<String>, pushRow.value != nil {
+			self.filters[-2] = pushRow.value!.lowercased()
 		}
 
-		if let pushRow = self.form.rowBy(tag: "language") as? PushRow<Language> {
-			if pushRow.value != nil {
-				self.filters[-3] = pushRow.value!.lid
-			}
+		if let pushRow = self.form.rowBy(tag: "language") as? PushRow<Language>, pushRow.value != nil {
+			self.filters[-3] = pushRow.value!.lid
 		}
 
-		let allFields = activity.allFields()
+		for field in activity.allFields() {
+			if let row = self.form.rowBy(tag: field.permalink) {
 
-		allFields.forEach { (field) in
-			let row = self.form.rowBy(tag: field.permalink)
-
-			if row != nil {
-				if field.dataType == .Boolean,
-					let switchRow = row as? SwitchRow {
-
-					self.filters[field.lid] = switchRow.value
-
-				} else if field.dataType == .Number,
-					let sliderRow = row as? SliderRow {
-
-					if sliderRow.value != nil {
-						let value = Int(sliderRow.value!)
-						if value != field.min {
-							self.filters[field.lid] = value
+				switch field.dataType {
+				case .Boolean:
+					if let switchRow = row as? SwitchRow {
+						self.filters[field.lid] = switchRow.value
+					}
+				case .Number:
+					if let sliderRow = row as? SliderRow, sliderRow.value != nil, Int(sliderRow.value!) != field.min {
+						self.filters[field.lid] = sliderRow.value!
+					}
+				case .Option:
+					if field.displayAsCheckboxes {
+						if let selectRow = row as? MultipleSelectorRow<FieldOption>, selectRow.value != nil {
+							self.filters[field.lid] = selectRow.value!.map { $0.lid }
+						}
+					} else {
+						if let pushRow = row as? PushRow<FieldOption>, pushRow.value != nil {
+							self.filters[field.lid] = pushRow.value!.lid
 						}
 					}
-
-				} else if field.dataType == .Option && field.displayAsCheckboxes,
-					let selectRow = row as? MultipleSelectorRow<FieldOption> {
-
-					if selectRow.value != nil {
-						self.filters[field.lid] = selectRow.value!.map { $0.lid }
-						log.debug("\(selectRow.value)")
-					}
-
-				} else if field.dataType == .Option && !field.displayAsCheckboxes,
-					let pushRow = row as? PushRow<FieldOption> {
-
-					if pushRow.value != nil {
-						self.filters[field.lid] = pushRow.value!.lid
-					}
-
-				} else {
-					log.error("Unknown data type for \(activity.permalink):\(field.permalink)")
+				default:
+					log.error("Unknown datatype for \(activity.permalink):\(field.permalink)")
 				}
 			}
 		}

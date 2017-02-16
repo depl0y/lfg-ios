@@ -37,7 +37,7 @@ public class Activity: Object, Mappable {
 	}
 
 	public required init(value: Any, schema: RLMSchema) {
-		fatalError("init(value:schema:) has not been implemented")
+		super.init(value: value, schema: schema)
 	}
 
 	public required init(realm: RLMRealm, schema: RLMObjectSchema) {
@@ -106,10 +106,8 @@ public class Activity: Object, Mappable {
 		let predicate = NSPredicate(format: "NOT (permalink in %@)", activities)
 		let objects = realm.objects(Activity.self).filter(predicate)
 
-		log.debug("Found \(objects.count) objects for removal")
 		objects.forEach { (o) in
 			o.remove(realm: realm)
 		}
-		
 	}
 }

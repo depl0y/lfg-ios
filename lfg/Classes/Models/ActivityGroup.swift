@@ -26,7 +26,7 @@ public class ActivityGroup: Object, Mappable, ValueFinder {
 	}
 
 	public required init(value: Any, schema: RLMSchema) {
-		fatalError("init(value:schema:) has not been implemented")
+		super.init(value: value, schema: schema)
 	}
 
 	public required init(realm: RLMRealm, schema: RLMObjectSchema) {

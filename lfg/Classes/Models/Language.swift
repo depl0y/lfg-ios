@@ -34,7 +34,7 @@ public class Language: Object, Mappable {
 	}
 
 	required public init(value: Any, schema: RLMSchema) {
-		fatalError("init(value:schema:) has not been implemented")
+		super.init(value: value, schema: schema)
 	}
 
 	public func mapping(map: Map) {

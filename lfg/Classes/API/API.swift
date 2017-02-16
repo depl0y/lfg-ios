@@ -86,10 +86,10 @@ class API {
 	///   - activity: The activity to find requests for
 	///   - filters: The filters the user has set up
 	///   - completed: A callback, which is performed when the request is complete, containing the requests for that activity
-	public func query(activity: Activity, page: Int, perPage: Int, filters: [Int: Any], completed: @escaping (_ success: Bool, _ requests: [Request]?) -> Void) {
-		let url = "\(baseUrl)requests/\(activity.permalink)/query"
+	public func query(activity: Activity, page: Int, perPage: Int, filters: [Int: Any],
+	                  completed: @escaping (_ success: Bool, _ requests: [Request]?) -> Void) {
 
-		log.debug("POST \(url)")
+		let url = "\(baseUrl)requests/\(activity.permalink)/query"
 
 		var parameters: [String: Any] = [
 			"page": page,
@@ -108,7 +108,7 @@ class API {
 			parameters[realKey] = value
 		}
 
-		log.verbose("Query parameters: \(parameters)")
+		log.debug("POST \(url) \(parameters)")
 
 		Alamofire.request(url, method: .post, parameters: parameters).responseObject { (response: DataResponse<QueryResponse>) in
 			if let result = response.result.value {

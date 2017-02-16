@@ -15,6 +15,8 @@ target 'lfg' do
   pod 'JKNotificationPanel'
   pod 'FontAwesome.swift'
   pod 'TTRangeSlider'
+  pod 'DateToolsSwift', :git => 'https://github.com/MatthewYork/DateTools.git'
+  pod 'ionicons'
 end
 
 post_install do |installer|

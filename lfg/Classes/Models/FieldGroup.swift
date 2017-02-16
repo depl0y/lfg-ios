@@ -27,7 +27,7 @@ public class FieldGroup: Object, Mappable {
 	}
 
 	public required init(value: Any, schema: RLMSchema) {
-		fatalError("init(value:schema:) has not been implemented")
+		super.init(value: value, schema: schema)
 	}
 
 	public required init(realm: RLMRealm, schema: RLMObjectSchema) {
@@ -85,8 +85,6 @@ public class FieldGroup: Object, Mappable {
 	public static func removeExcept(realm: Realm, activity: Activity, names: [String]) {
 		let predicate = NSPredicate(format: "activity = %@ AND NOT (name in %@)", activity, names)
 		let objects = realm.objects(FieldGroup.self).filter(predicate)
-
-		log.verbose("Found \(objects.count) objects for removal")
 
 		objects.forEach { (o) in
 			o.remove(realm: realm)
