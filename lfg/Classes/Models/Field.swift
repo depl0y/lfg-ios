@@ -124,6 +124,11 @@ public class Field: Object, Mappable, ValueFinder {
 		options <- (map["options"], ListTransform<FieldOption>())
 	}
 
+	/// This creates or updates the activity in the database
+	/// If the object is IN the database, that instance will be returned
+	///
+	/// - Parameter realm: The realm to use
+	/// - Returns: The added object, if one already exists, that object will be updated and returned
 	public func createOrUpdate(realm: Realm, fieldGroup: FieldGroup) -> Field {
 		let predicate = NSPredicate(format: "lid = %d", self.lid)
 		let objects = realm.objects(Field.self).filter(predicate)
@@ -202,6 +207,10 @@ public class Field: Object, Mappable, ValueFinder {
 		}
 	}
 
+	/// Find an object by the identifying property
+	///
+	/// - Parameter value: The value of the identifying property
+	/// - Returns: The object if any is found, otherwise nil
 	public static func findByValue(value: Any) -> Field? {
 		if let vid = value as? Int {
 			do {

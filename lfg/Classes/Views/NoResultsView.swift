@@ -36,8 +36,8 @@ public class NoResultsView: UIView, PureLayoutSetup {
 		self.imageView.autoAlignAxis(.horizontal, toSameAxisOf: self)
 		self.imageView.autoAlignAxis(.vertical, toSameAxisOf: self)
 
-		self.titleLabel.autoPinEdge(.left, to: .left, of: self, withOffset: 10)
-		self.titleLabel.autoPinEdge(.right, to: .right, of: self, withOffset: -10)
+		self.titleLabel.autoPinEdge(.left, to: .left, of: self)
+		self.titleLabel.autoPinEdge(.right, to: .right, of: self)
 		self.titleLabel.autoPinEdge(.top, to: .bottom, of: self.imageView, withOffset: 0)
 		self.titleLabel.autoSetDimension(.height, toSize: 22)
 

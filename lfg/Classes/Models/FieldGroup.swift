@@ -39,6 +39,11 @@ public class FieldGroup: Object, Mappable {
 		fields <- (map["objects"], ListTransform<Field>())
 	}
 
+	/// This creates or updates the activity in the database
+	/// If the object is IN the database, that instance will be returned
+	///
+	/// - Parameter realm: The realm to use
+	/// - Returns: The added object, if one already exists, that object will be updated and returned
 	public func createOrUpdate(realm: Realm, activity: Activity) -> FieldGroup {
 		let predicate = NSPredicate(format: "name = %@ AND activity = %@", self.name, activity)
 		let objects = realm.objects(FieldGroup.self).filter(predicate)

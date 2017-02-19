@@ -11,7 +11,7 @@ import RealmSwift
 import ObjectMapper
 import Realm
 
-public class Language: Object, Mappable {
+public class Language: Object, Mappable, ValueFinder {
 
 	dynamic var lid: Int = 0
 	dynamic var identifier: String = ""
@@ -43,6 +43,11 @@ public class Language: Object, Mappable {
 		self.title <- map["title"]
 	}
 
+	/// This creates or updates the activity in the database
+	/// If the object is IN the database, that instance will be returned
+	///
+	/// - Parameter realm: The realm to use
+	/// - Returns: The added object, if one already exists, that object will be updated and returned
 	func createOrUpdate(realm: Realm) -> Language {
 		let languages = realm.objects(Language.self).filter("lid = \(self.lid)")
 
@@ -64,6 +69,23 @@ public class Language: Object, Mappable {
 	private func copy(source: Language, realm: Realm) {
 		self.identifier	= source.identifier
 		self.title = source.title
+	}
+
+	/// Find an object by the identifying property
+	///
+	/// - Parameter value: The value of the identifying property
+	/// - Returns: The object if any is found, otherwise nil
+	public static func findByValue(value: Any) -> Language? {
+		if let groupId = value as? Int {
+			do {
+				let realm = try Realm()
+				let groups = realm.objects(Language.self).filter("lid = %d", groupId)
+				return groups.first
+			} catch {
+				log.error("Error occured while fetching REALM")
+			}
+		}
+		return nil
 	}
 
 	public override var description: String {

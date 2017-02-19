@@ -60,6 +60,8 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 
 	public var remove: Bool = false
 
+	public var language: Language?
+
 	public required init?(map: Map) {
 	}
 
@@ -89,7 +91,6 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 		}
 
 		return result
-
 	}
 
 	public func mapping(map: Map) {
@@ -127,6 +128,15 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 			self.definitions.forEach({ (definition) in
 				if let fieldValue = FieldValue.resolve(definition: definition, realm: realm) {
 					self.fieldValues.append(fieldValue)
+				} else {
+					if let id = definition.lid as? String {
+						if id.lowercased() == "language" {
+							let language = Language.findByValue(value: definition.value)
+							if language != nil {
+								self.language = ObjectDetacher<Language>.detach(object: language!)
+							}
+						}
+					}
 				}
 			})
 		} catch {

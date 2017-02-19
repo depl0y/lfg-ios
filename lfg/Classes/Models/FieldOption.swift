@@ -55,6 +55,11 @@ public class FieldOption: Object, Mappable, ValueFinder {
 		sortorder <- map["sortorder"]
 	}
 
+	/// This creates or updates the activity in the database
+	/// If the object is IN the database, that instance will be returned
+	///
+	/// - Parameter realm: The realm to use
+	/// - Returns: The added object, if one already exists, that object will be updated and returned
 	public func createOrUpdate(realm: Realm, field: Field) -> FieldOption {
 		let predicate = NSPredicate(format: "lid = %d", self.lid)
 		let objects = realm.objects(FieldOption.self).filter(predicate)
@@ -115,6 +120,10 @@ public class FieldOption: Object, Mappable, ValueFinder {
 		}
 	}
 
+	/// Find an object by the identifying property
+	///
+	/// - Parameter value: The value of the identifying property
+	/// - Returns: The object if any is found, otherwise nil
 	public static func findByValue(value: Any) -> FieldOption? {
 		if let vid = value as? Int {
 			do {

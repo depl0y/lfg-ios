@@ -113,7 +113,6 @@ class API {
 
 		Alamofire.request(url, method: .post, parameters: parameters).responseObject { (response: DataResponse<QueryResponse>) in
 			if let result = response.result.value {
-
 				result.requests.forEach({ (request) in
 					request.activity = activity
 				})

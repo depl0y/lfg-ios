@@ -47,6 +47,11 @@ public class ActivityGroup: Object, Mappable, ValueFinder {
 		return self.name
 	}
 
+	/// This creates or updates the activity in the database
+	/// If the object is IN the database, that instance will be returned
+	///
+	/// - Parameter realm: The realm to use
+	/// - Returns: The added object, if one already exists, that object will be updated and returned
 	func createOrUpdate(realm: Realm) -> ActivityGroup {
 		let groups = realm.objects(ActivityGroup.self).filter("lid = \(self.lid)")
 
@@ -70,6 +75,10 @@ public class ActivityGroup: Object, Mappable, ValueFinder {
 		self.icon = source.icon
 	}
 
+	/// Find an object by the identifying property
+	///
+	/// - Parameter value: The value of the identifying property
+	/// - Returns: The object if any is found, otherwise nil
 	public static func findByValue(value: Any) -> ActivityGroup? {
 		if let groupId = value as? Int {
 			do {

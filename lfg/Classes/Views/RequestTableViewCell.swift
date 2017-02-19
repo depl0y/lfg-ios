@@ -11,12 +11,22 @@ import PureLayout
 import DateToolsSwift
 
 class FieldValueRow {
-	public var fieldValue: FieldValue
+	public var fieldValue: FieldValue?
 	public var fieldNameLabel = UILabel()
 	public var fieldValueLabel = UILabel()
 
 	init(fieldValue: FieldValue) {
 		self.fieldValue = fieldValue
+
+		if self.fieldValue != nil && self.fieldValue!.field != nil {
+			self.fieldNameLabel.text = self.fieldValue!.field!.name
+			self.fieldValueLabel.text = self.fieldValue!.toString()
+		}
+	}
+
+	init(fieldName: String, text: String) {
+		self.fieldNameLabel.text = fieldName
+		self.fieldValueLabel.text = text
 	}
 
 	func addViews(view: UIView, topView: UIView?, topOffset: CGFloat = 2) {
@@ -26,10 +36,6 @@ class FieldValueRow {
 		self.fieldNameLabel.font = UIFont.latoWithSize(size: 14)
 		self.fieldValueLabel.font = UIFont.latoWithSize(size: 14)
 
-		if self.fieldValue.field != nil {
-			self.fieldNameLabel.text = self.fieldValue.field!.name
-			self.fieldValueLabel.text = self.fieldValue.toString()
-		}
 		self.fieldNameLabel.textColor = UIColor(netHex: 0x757575)
 
 		self.fieldNameLabel.autoPinEdge(.left, to: .left, of: view)
@@ -105,7 +111,7 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 		self.titleLabel.autoPinEdge(.left, to: .left, of: self, withOffset: cellPadding)
 		self.titleLabel.autoPinEdge(.right, to: .right, of: self, withOffset: cellPadding * -1)
 		self.titleLabel.autoPinEdge(.top, to: .bottom, of: self.modeLabel, withOffset: 4)
-		self.titleLabel.autoSetDimension(.height, toSize: 30)
+		self.titleLabel.autoSetDimension(.height, toSize: 20)
 
 		self.messageLabel.autoPinEdge(.left, to: .left, of: self, withOffset: cellPadding)
 		self.messageLabel.autoPinEdge(.right, to: .right, of: self, withOffset: cellPadding * -1)
@@ -117,7 +123,7 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 
 		self.playerSeparator.autoPinEdge(.left, to: .left, of: self, withOffset: cellPadding)
 		self.playerSeparator.autoPinEdge(.right, to: .right, of: self, withOffset: cellPadding * -1)
-		self.playerSeparator.autoPinEdge(.top, to: .bottom, of: self.fieldValuesView, withOffset: 4)
+		self.playerSeparator.autoPinEdge(.top, to: .bottom, of: self.fieldValuesView, withOffset: 6)
 		self.playerSeparator.autoSetDimension(.height, toSize: 14)
 
 		self.playerLabel.autoPinEdge(.left, to: .left, of: self, withOffset: cellPadding)
@@ -206,11 +212,23 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 
 			var previousView: UIView? = nil
 
+			if request.language != nil {
+				let topOffset: CGFloat = 6
+				let row = FieldValueRow(fieldName: "Language", text: request.language!.title)
+				row.addViews(view: self.fieldValuesView, topView: previousView, topOffset: topOffset)
+				previousView = row.fieldNameLabel
+				self.fieldValueRows.append(row)
+
+				if request.listValues.count == 0 {
+					row.fieldValueLabel.autoPinEdge(.bottom, to: .bottom, of: self.fieldValuesView, withOffset: -6)
+				}
+
+			}
+
 			request.listValues.forEach { (fieldValue) in
-				let topOffset: CGFloat = (request.listValues.first! == fieldValue) ? 6 : 2
+				let topOffset: CGFloat = (previousView == nil) ? 6 : 2
 
 				let row = FieldValueRow(fieldValue: fieldValue)
-
 				row.addViews(view: self.fieldValuesView, topView: previousView, topOffset: topOffset)
 				previousView = row.fieldNameLabel
 				self.fieldValueRows.append(row)

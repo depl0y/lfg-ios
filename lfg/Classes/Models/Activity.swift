@@ -71,6 +71,11 @@ public class Activity: Object, Mappable {
 		discordInviteCode <- map["discord_info.invite_code"]
 	}
 
+	/// This creates or updates the activity in the database
+	/// If the object is IN the database, that instance will be returned
+	///
+	/// - Parameter realm: The realm to use
+	/// - Returns: The added object, if one already exists, that object will be updated and returned
 	func createOrUpdate(realm: Realm) -> Activity {
 		let activities = realm.objects(Activity.self).filter("permalink = '\(self.permalink)'")
 
