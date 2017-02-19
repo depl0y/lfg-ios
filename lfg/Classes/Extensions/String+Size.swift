@@ -10,7 +10,13 @@ import Foundation
 import UIKit
 
 extension String {
-	func heightWithConstrainedWidth(width: CGFloat, font: UIFont) -> CGRect {
+	/// Calculates the size of the box for a string, constrained to a certain width
+	///
+	/// - Parameters:
+	///   - width: The width constrain
+	///   - font: The font to use to calculate the size
+	/// - Returns: A box, describing the width and height of the string
+	func calculateSize(width: CGFloat, font: UIFont) -> CGRect {
 		let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
 		let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: font], context: nil)
 
@@ -29,6 +35,12 @@ extension String {
 }
 
 extension NSMutableAttributedString {
+
+	/// Add text with a certain font to an attributed string
+	///
+	/// - Parameters:
+	///   - text: The text to add
+	///   - font: The font to use for the text that is appended
 	public func addWithFont(_ text: String, font: UIFont) {
 		let attrs: [String: AnyObject] = [NSFontAttributeName: font]
 		let boldString = NSMutableAttributedString(string:"\(text)", attributes:attrs)

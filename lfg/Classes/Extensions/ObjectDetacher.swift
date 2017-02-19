@@ -12,6 +12,11 @@ import Realm
 
 class ObjectDetacher<T: Object> {
 
+
+	/// Detach an object from the current Realm, using the right schema
+	///
+	/// - Parameter object: The object to detach
+	/// - Returns: A detached object
 	static func detach(object: T) -> T {
 		return T(value: object, schema:  RLMSchema(objectClasses: [
 			Field.self,
@@ -21,15 +26,4 @@ class ObjectDetacher<T: Object> {
 			ActivityGroup.self
 		]))
 	}
-
 }
-
-/*
-self.option = FieldOption(value: option, schema: RLMSchema(objectClasses: [
-Field.self,
-FieldGroup.self,
-Activity.self,
-FieldOption.self,
-ActivityGroup.self
-]))
-*/

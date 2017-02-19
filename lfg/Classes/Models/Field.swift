@@ -145,6 +145,11 @@ public class Field: Object, Mappable, ValueFinder {
 		}
 	}
 
+	/// Create a deep copy from an object onto the current object
+	///
+	/// - Parameters:
+	///   - source: The object to copy from
+	///   - realm: The realm to use for the copy
 	public func copy(source: Field, realm: Realm) {
 		self.name = source.name
 		self.icon = source.icon
@@ -183,6 +188,12 @@ public class Field: Object, Mappable, ValueFinder {
 		realm.delete(self)
 	}
 
+	/// Removes objects that are no longer present
+	///
+	/// - Parameters:
+	///   - realm: The realm to use
+	///   - fieldGroup: The group the fields should be in
+	///   - activities: Identifiers still available
 	public static func removeExcept(realm: Realm, fieldGroup: FieldGroup, fields: [Int]) {
 		let predicate = NSPredicate(format: "fieldGroup = %@ AND NOT (lid in %@)", fieldGroup, fields)
 		let objects = realm.objects(Field.self).filter(predicate)

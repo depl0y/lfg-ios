@@ -84,6 +84,10 @@ public class Activity: Object, Mappable {
 		}
 	}
 
+
+	/// Do a cascading delete of this object
+	///
+	/// - Parameter realm: The realm to use for the delete
 	func remove(realm: Realm) {
 		_ = Array(self.fieldGroups).map { $0.remove(realm: realm) }
 		realm.delete(self)
@@ -93,6 +97,12 @@ public class Activity: Object, Mappable {
 		return Array(self.fieldGroups).flatMap { Array($0.fields) }
 	}
 
+
+	/// Create a deep copy from an object onto the current object
+	///
+	/// - Parameters:
+	///   - source: The object to copy from
+	///   - realm: The realm to use for the copy
 	private func copy(source: Activity, realm: Realm) {
 		self.name = source.name
 
@@ -119,6 +129,11 @@ public class Activity: Object, Mappable {
 		})
 	}
 
+	/// Removes objects that are no longer present
+	///
+	/// - Parameters:
+	///   - realm: The realm to use
+	///   - activities: Identifiers still available
 	public static func removeExcept(realm: Realm, activities: [String]) {
 		let predicate = NSPredicate(format: "NOT (permalink in %@)", activities)
 		let objects = realm.objects(Activity.self).filter(predicate)

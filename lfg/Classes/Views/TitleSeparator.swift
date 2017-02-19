@@ -36,7 +36,7 @@ public class TitleSeparator: UIView {
 		self.titleLabel.text = title
 		self.setNeedsDisplay()
 
-		let textSize = title.heightWithConstrainedWidth(width: self.frame.size.width, font: self.titleLabel.font)
+		let textSize = title.calculateSize(width: self.frame.size.width, font: self.titleLabel.font)
 		self.textWidth = textSize.width
 	}
 

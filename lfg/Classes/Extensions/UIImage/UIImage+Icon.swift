@@ -78,12 +78,12 @@ extension UIImage {
 
 		var fontSize = iconSize.height - 2
 		var font = UIFont.latoBoldWithSize(size: fontSize)
-		var textSize = text.heightWithConstrainedWidth(width: 9000, font: font)
+		var textSize = text.calculateSize(width: 9000, font: font)
 
 		while textSize.width > iconSize.width {
 			fontSize -= 2
 			font = UIFont.latoBoldWithSize(size: fontSize)
-			textSize = text.heightWithConstrainedWidth(width: 9000, font: font)
+			textSize = text.calculateSize(width: 9000, font: font)
 		}
 
 		let point = CGPoint(x: (iconSize.width / 2) - (textSize.width / 2), y: (iconSize.height / 2) - (textSize.height / 2))

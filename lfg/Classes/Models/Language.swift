@@ -56,6 +56,11 @@ public class Language: Object, Mappable {
 		}
 	}
 
+	/// Create a deep copy from an object onto the current object
+	///
+	/// - Parameters:
+	///   - source: The object to copy from
+	///   - realm: The realm to use for the copy
 	private func copy(source: Language, realm: Realm) {
 		self.identifier	= source.identifier
 		self.title = source.title

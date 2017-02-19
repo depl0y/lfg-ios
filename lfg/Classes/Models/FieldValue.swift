@@ -65,64 +65,6 @@ public class FieldValue {
 		return nil
 	}
 
-	/*
-	public required init?(map: Map) {
-		if let lid = map.JSON["id"] as? Int {
-			if Field.findByValue(value: lid) == nil {
-				return nil
-			}
-		} else {
-			return nil
-		}
-	}
-	*/
-	/// This will map JSON to the object
-	///
-	/// - Parameter map: A JSON map
-	/*
-	public func mapping(map: Map) {
-		self.fieldId <- map["id"]
-		self.field <-  (map["id"], ValueFinderTransformer<Field>())
-		self.value <- map["value"]
-
-		if self.field != nil {
-
-			self.field = Field(value: self.field!, schema: RLMSchema(objectClasses: [
-				Field.self,
-				FieldGroup.self,
-				Activity.self,
-				FieldOption.self,
-				ActivityGroup.self
-				]))
-
-			if self.value != nil {
-				if field!.dataType == .Option {
-					if let option = FieldOption.findByValue(value: self.value!) {
-							self.option = FieldOption(value: option, schema: RLMSchema(objectClasses: [
-								Field.self,
-								FieldGroup.self,
-								Activity.self,
-								FieldOption.self,
-								ActivityGroup.self
-							]))
-					}
-				} else if field!.dataType == .Number {
-					if let number = self.value as? Int {
-						self.number = number
-					}
-				} else if field!.dataType == .Boolean {
-					if let bool = self.value as? Bool {
-						self.bool = bool
-					}
-				}
-			}
-		} else {
-			log.error("No Field with id \(self.fieldId)")
-
-		}
-	}
-	*/
-
 	public func toString() -> String {
 		if field != nil {
 			if field!.dataType == .Option && self.option != nil {

@@ -63,6 +63,8 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 	public required init?(map: Map) {
 	}
 
+
+	/// Returns FieldValues that should be shown in the request list
 	public var listValues: [FieldValue] {
 		var result = self.fieldValues.filter({ (fieldValue) -> Bool in
 			return fieldValue.field != nil &&
@@ -77,6 +79,7 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 		return result
 	}
 
+	/// Returns FieldValues that should be shown as icon (boolean and has an icon)
 	public var boolValues: [FieldValue] {
 		var result = self.fieldValues.filter({ (fieldValue) -> Bool in
 			return fieldValue.field != nil && fieldValue.field!.dataType == .Boolean && fieldValue.field!.icon != nil
@@ -118,6 +121,7 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 
 	}
 
+	///	Start resolving definitions
 	private func findFieldValues() {
 		do {
 			let realm = try Realm()

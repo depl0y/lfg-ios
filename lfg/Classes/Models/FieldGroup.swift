@@ -63,11 +63,19 @@ public class FieldGroup: Object, Mappable {
 		}
 	}
 
+	/// Do a cascading delete of this object
+	///
+	/// - Parameter realm: The realm to use for the delete
 	public func remove(realm: Realm) {
 		_ = Array(self.fields).map { $0.remove(realm: realm) }
 		realm.delete(self)
 	}
 
+	/// Create a deep copy from an object onto the current object
+	///
+	/// - Parameters:
+	///   - source: The object to copy from
+	///   - realm: The realm to use for the copy
 	private func copy(source: FieldGroup, realm: Realm) {
 		self.name = source.name
 		let fieldIds = Array(source.fields).map { $0.lid }
@@ -82,6 +90,12 @@ public class FieldGroup: Object, Mappable {
 		}
 	}
 
+	/// Removes objects that are no longer present
+	///
+	/// - Parameters:
+	///   - realm: The realm to use
+	///   - activity: The activity attached to this
+	///   - activities: Identifiers still available
 	public static func removeExcept(realm: Realm, activity: Activity, names: [String]) {
 		let predicate = NSPredicate(format: "activity = %@ AND NOT (name in %@)", activity, names)
 		let objects = realm.objects(FieldGroup.self).filter(predicate)

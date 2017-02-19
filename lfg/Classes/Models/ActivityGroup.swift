@@ -60,6 +60,11 @@ public class ActivityGroup: Object, Mappable, ValueFinder {
 		}
 	}
 
+	/// Create a deep copy from an object onto the current object
+	///
+	/// - Parameters:
+	///   - source: The object to copy from
+	///   - realm: The realm to use for the copy
 	private func copy(source: ActivityGroup, realm: Realm) {
 		self.name = source.name
 		self.icon = source.icon

@@ -71,10 +71,18 @@ public class FieldOption: Object, Mappable, ValueFinder {
 		}
 	}
 
+	/// Do a cascading delete of this object
+	///
+	/// - Parameter realm: The realm to use for the delete
 	public func remove(realm: Realm) {
 		realm.delete(self)
 	}
 
+	/// Create a deep copy from an object onto the current object
+	///
+	/// - Parameters:
+	///   - source: The object to copy from
+	///   - realm: The realm to use for the copy
 	private func copy(source: FieldOption, realm: Realm) {
 		self.name = source.name
 		self.permalink = source.permalink
@@ -84,6 +92,12 @@ public class FieldOption: Object, Mappable, ValueFinder {
 		self.group = source.group
 	}
 
+	/// Removes objects that are no longer present
+	///
+	/// - Parameters:
+	///   - realm: The realm to use
+	///   - field: The field connected to this object
+	///   - activities: Identifiers still available
 	public static func removeExcept(realm: Realm, field: Field, options: [Int]) {
 		let predicate = NSPredicate(format: "field = %@ AND NOT (lid in %@)", field, options)
 		let objects = realm.objects(FieldOption.self).filter(predicate)

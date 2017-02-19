@@ -10,6 +10,9 @@ import Foundation
 
 extension Date {
 
+	/// Date to relative time from now
+	///
+	/// - Returns: A string describing the relative time from now
 	func timeAgo() -> String {
 		let currentDate = Date()
 
@@ -42,18 +45,5 @@ extension Date {
 
 			return value
 		}
-
 	}
-
 }
-
-/*
-if elapsed_seconds < 60
-elsif elapsed_seconds >= 3600 && elapsed_seconds < 86400
-result[:number] = ((elapsed_seconds / 60) / 60).to_i
-result[:time_object] = (result[:number] == 1) ? I18n.t("request.item.time.hour") : I18n.t("request.item.time.hours")
-elsif elapsed_seconds >= 86400
-result[:number] = (((elapsed_seconds / 60) / 60) / 24).to_i
-result[:time_object] = (result[:number] == 1) ? I18n.t("request.item.time.day") : I18n.t("request.item.time.days")
-end
-*/
