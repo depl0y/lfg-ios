@@ -11,7 +11,6 @@ import UIKit
 
 extension UIFont {
 
-
 	/// Static function return an UIFont with the Lato font loaded
 	///
 	/// - Parameter size: The size of the font

@@ -84,7 +84,6 @@ public class Activity: Object, Mappable {
 		}
 	}
 
-
 	/// Do a cascading delete of this object
 	///
 	/// - Parameter realm: The realm to use for the delete
@@ -96,7 +95,6 @@ public class Activity: Object, Mappable {
 	func allFields() -> [Field] {
 		return Array(self.fieldGroups).flatMap { Array($0.fields) }
 	}
-
 
 	/// Create a deep copy from an object onto the current object
 	///

@@ -63,7 +63,6 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 	public required init?(map: Map) {
 	}
 
-
 	/// Returns FieldValues that should be shown in the request list
 	public var listValues: [FieldValue] {
 		var result = self.fieldValues.filter({ (fieldValue) -> Bool in

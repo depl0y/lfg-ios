@@ -10,7 +10,6 @@ import Foundation
 
 extension Array where Element: Equatable {
 
-
 	/// Remove duplicates from an array
 	///
 	/// - Returns: The array, removing all duplicate objects
@@ -19,7 +18,6 @@ extension Array where Element: Equatable {
 		arrayCopy.uniqInPlace()
 		return arrayCopy
 	}
-
 
 	/// In place removing of duplicates from this array
 	mutating public func uniqInPlace() {

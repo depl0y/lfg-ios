@@ -15,7 +15,6 @@ public class IconManager {
 
 	private var icons = [String: UIImage]()
 
-
 	/// Tries to load a previously generated icon
 	///
 	/// - Parameter key: The key associated with the icon
@@ -23,7 +22,6 @@ public class IconManager {
 	public func get(key: String) -> UIImage? {
 		return icons[key]
 	}
-
 
 	/// Create an icon
 	///

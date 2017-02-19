@@ -12,7 +12,6 @@ import Realm
 
 class ObjectDetacher<T: Object> {
 
-
 	/// Detach an object from the current Realm, using the right schema
 	///
 	/// - Parameter object: The object to detach

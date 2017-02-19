@@ -278,7 +278,6 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 				self.boolImages.append(sendMessageButton)
 				sendMessageButton.addTarget(self, action: #selector(self.messageClicked), for: UIControlEvents.touchUpInside)
 
-
 				//let imageView = UIImageView(image: image!)
 				//self.booleansView.addSubview(imageView)
 /*
