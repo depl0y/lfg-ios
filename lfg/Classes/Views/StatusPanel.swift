@@ -9,7 +9,7 @@
 import UIKit
 import PureLayout
 
-public class StatusPanel: UIView {
+public class StatusPanel: UIView, PureLayoutSetup {
 
 	private var titleLabel = UILabel()
 	private var activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.white)
@@ -18,26 +18,34 @@ public class StatusPanel: UIView {
 	public init() {
 		super.init(frame: CGRect.zero)
 
-		self.backgroundColor = UIColor(netHex: 0x249381)
-
 		self.addSubview(self.activityIndicator)
-		self.activityIndicator.hidesWhenStopped = true
-
-		self.activityIndicator.autoPinEdge(.top, to: .top, of: self, withOffset: 4)
-		self.activityIndicator.autoPinEdge(.left, to: .left, of: self, withOffset: 4)
-		self.indicatorDimensions = self.activityIndicator.autoSetDimensions(to: CGSize(width: 22, height: 22))
-
 		self.addSubview(self.titleLabel)
-		self.titleLabel.font = UIFont.latoWithSize(size: 14)
-		self.titleLabel.textColor = UIColor.white
+		self.setupConstraints()
+		self.configureViews()
+	}
+
+	required public init?(coder aDecoder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+
+	public func setupConstraints() {
+		self.activityIndicator.autoPinEdge(.left, to: .left, of: self, withOffset: 6)
+		self.indicatorDimensions = self.activityIndicator.autoSetDimensions(to: CGSize(width: 22, height: 22))
+		self.activityIndicator.autoAlignAxis(.horizontal, toSameAxisOf: self)
+
 		self.titleLabel.autoPinEdge(.top, to: .top, of: self, withOffset: 0)
 		self.titleLabel.autoPinEdge(.bottom, to: .bottom, of: self, withOffset: 0)
 		self.titleLabel.autoPinEdge(.left, to: .right, of: self.activityIndicator, withOffset: 6)
 		self.titleLabel.autoPinEdge(.right, to: .right, of: self, withOffset: -6)
 	}
 
-	required public init?(coder aDecoder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
+	public func configureViews() {
+		self.backgroundColor = UIColor(netHex: 0x249381)
+
+		self.activityIndicator.hidesWhenStopped = true
+
+		self.titleLabel.font = UIFont.latoWithSize(size: 14)
+		self.titleLabel.textColor = UIColor.white
 	}
 
 	public func setTitle(title: String, active: Bool, animate: Bool = true) {

@@ -23,7 +23,13 @@ public class Activity: Object, Mappable {
 	dynamic var releaseDate: Date?
 	dynamic var url: String = ""
 
+	dynamic var lastConfigUpdate: Date?
+
 	dynamic var subscribe: Bool = true
+
+	dynamic var discordChannel: String?
+	dynamic var discordInviteCode: String?
+	dynamic var discordServer: String?
 
 	var groups = List<ActivityGroup>()
 	let fieldGroups = List<FieldGroup>()
@@ -59,6 +65,10 @@ public class Activity: Object, Mappable {
 		releaseDate <- (map["release_date"], DateTransformer(format: "yyyy-MM-dd'T'HH:mm:ss.SSSz"))
 		url <- map["url"]
 		groups <- (map["groups"], ListTransform<ActivityGroup>())
+
+		discordServer <- map["discord_info.server_id"]
+		discordChannel <- map["discord_info.channel_name"]
+		discordInviteCode <- map["discord_info.invite_code"]
 	}
 
 	func createOrUpdate(realm: Realm) -> Activity {
@@ -85,13 +95,20 @@ public class Activity: Object, Mappable {
 
 	private func copy(source: Activity, realm: Realm) {
 		self.name = source.name
-		self.icon = source.icon
+
+		if self.icon != source.icon {
+			self.icon = source.icon
+		}
+
 		self.banner = source.banner
 		self.background = source.background
 		self.popularity = source.popularity
 		self.configUrl = source.configUrl
 		self.releaseDate = source.releaseDate
 		self.url = source.url
+		self.discordServer = source.discordServer
+		self.discordChannel = source.discordChannel
+		self.discordInviteCode = source.discordInviteCode
 
 		source.groups.forEach({ (activityGroup) in
 			let ag = activityGroup.createOrUpdate(realm: realm)

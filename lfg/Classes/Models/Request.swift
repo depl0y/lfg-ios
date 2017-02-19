@@ -11,6 +11,20 @@ import ObjectMapper
 import Realm
 import RealmSwift
 
+public class Definition: Mappable {
+
+	dynamic var lid: Any = -1
+	dynamic var value: Any = 0
+
+	public func mapping(map: Map) {
+		self.lid <- map["id"]
+		self.value <- map["value"]
+	}
+
+	public required init?(map: Map) {
+	}
+}
+
 public class Request: Mappable, Equatable, Hashable, Comparable {
 	/// Returns a Boolean value indicating whether the value of the first
 	/// argument is less than that of the second argument.
@@ -37,6 +51,8 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 	public var username: String = ""
 	public var activityGroupMessageLink: String?
 	public var fieldValues = [FieldValue]()
+
+	public var definitions = [Definition]()
 
 	public var message: String = ""
 
@@ -88,25 +104,31 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 		self.activityGroup <- (map["activity_group.id"], ValueFinderTransformer<ActivityGroup>())
 
 		if self.activityGroup != nil {
-			self.activityGroup = ActivityGroup(value: self.activityGroup!, schema: RLMSchema(objectClasses: [
-				Field.self,
-				FieldGroup.self,
-				Activity.self,
-				FieldOption.self,
-				ActivityGroup.self
-				]))
+			self.activityGroup = ObjectDetacher<ActivityGroup>.detach(object: self.activityGroup!)
 		}
 
+		self.username <- map["username"]
 		self.lfg <- map["lfg"]
 		self.isPlanned <- map["is_planned"]
 		self.activityGroupMessageLink <- map["activity_group_link"]
-		self.fieldValues <- map["definitions"] //, ValueFinderTransformer<FieldValue>())
+		self.definitions <- map["definitions"]
 
 		self.timeStamp <- (map["timestamp"], DateTransformer(format: "yyyy-MM-dd'T'HH:mm:ss.SSSz"))
+		self.findFieldValues()
 
-		self.fieldValues = self.fieldValues.filter({ (fieldValue) -> Bool in
-			return fieldValue.field != nil
-		})
+	}
+
+	private func findFieldValues() {
+		do {
+			let realm = try Realm()
+			self.definitions.forEach({ (definition) in
+				if let fieldValue = FieldValue.resolve(definition: definition, realm: realm) {
+					self.fieldValues.append(fieldValue)
+				}
+			})
+		} catch {
+			log.error("Some error occured")
+		}
 	}
 
 	public var hashValue: Int {

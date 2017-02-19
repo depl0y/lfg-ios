@@ -12,19 +12,23 @@ import RealmSwift
 import JKNotificationPanel
 import PureLayout
 
-class ActivityViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class ActivityViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, PureLayoutSetup {
 
 	var activity: Activity!
 	var cableChannel: Channel?
+	var noRequests = UILabel()
 
 	let panel = JKNotificationPanel()
 
 	let tableView = UITableView()
+	var discordInfoView: DiscordInfoView!
 	var statusPanel = StatusPanel()
-
+	var noResultsView = NoResultsView()
 	var requests = [Request]()
 
 	var filters = [Int: Any]()
+
+	var statusPanelHeightConstraint: NSLayoutConstraint!
 
 	private var moreAvailable: Bool = false
 	private var currentPage: Int = 1
@@ -34,6 +38,8 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 
 	init(activity: Activity) {
 		super.init(nibName: nil, bundle: nil)
+
+		self.discordInfoView = DiscordInfoView(activity: activity, sender: self)
 		self.activity = activity
 		self.panel.timeUntilDismiss = 5
 		self.title = activity.name
@@ -50,11 +56,50 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		self.view.backgroundColor = UIColor(netHex: 0xf6f7f9)
 
 		self.view.addSubview(self.statusPanel)
+		self.view.addSubview(self.tableView)
+
+		if self.activity.discordChannel != nil && self.activity.discordInviteCode != nil {
+			self.tableView.tableHeaderView = self.discordInfoView
+		}
+
+		self.setupConstraints()
+		self.configureViews()
+
+		self.setupRealtimeConnection()
+
+		if activity.lastConfigUpdate != nil && activity.lastConfigUpdate! > Date().addingTimeInterval(-300) {
+			self.query()
+			self.refreshFilters()
+		} else {
+			self.configuration()
+		}
+	}
+
+	func setupConstraints() {
 		self.statusPanel.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .top)
-		self.statusPanel.autoSetDimension(.height, toSize: 28)
+		self.statusPanelHeightConstraint = self.statusPanel.autoSetDimension(.height, toSize: 36)
+
+		if self.activity.discordChannel != nil && self.activity.discordInviteCode != nil {
+			self.discordInfoView.autoPinEdge(.top, to: .top, of: self.tableView)
+			self.discordInfoView.autoPinEdge(.left, to: .left, of: self.tableView)
+			self.discordInfoView.autoMatch(.width, to: .width, of: self.tableView)
+			if self.activity.discordChannel != nil && self.activity.discordInviteCode != nil {
+				self.discordInfoView.autoSetDimension(.height, toSize: 56)
+			} else {
+				self.discordInfoView.autoSetDimension(.height, toSize: 0)
+			}
+		}
+
+		self.tableView.autoPinEdge(.top, to: .top, of: self.view)
+		self.tableView.autoPinEdge(.left, to: .left, of: self.view)
+		self.tableView.autoPinEdge(.right, to: .right, of: self.view)
+		self.tableView.autoPinEdge(.bottom, to: .top, of: self.statusPanel)
+
+	}
+
+	func configureViews() {
 		self.statusPanel.setTitle(title: "Loading", active: true, animate: false)
 
-		self.view.addSubview(self.tableView)
 		self.tableView.backgroundColor = UIColor.clear
 		self.tableView.delegate = self
 		self.tableView.dataSource = self
@@ -63,28 +108,36 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		self.tableView.separatorStyle = .none
 		self.tableView.tableFooterView = UIView()
 
-		self.tableView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 64, left: 0, bottom: 0, right: 0), excludingEdge: .bottom)
-		self.tableView.autoPinEdge(.bottom, to: .top, of: self.statusPanel)
-
-		self.setupRealtimeConnection()
-		self.configuration()
+		self.tableView.backgroundView = self.noResultsView
 
 		let settingsButton = UIBarButtonItem(title: "E", style: .plain, target: self, action: #selector(self.showSettings(sender:)))
 
 		let attributes = [NSFontAttributeName: UIFont.fontAwesome(ofSize: 20)] as [String: Any]
 		settingsButton.setTitleTextAttributes(attributes, for: .normal)
-
 		settingsButton.title = String.fontAwesomeIcon(name: .search)
 
 		self.navigationItem.rightBarButtonItem = settingsButton
+		self.edgesForExtendedLayout = []
 	}
 
 	override func viewWillAppear(_ animated: Bool) {
 		setupRealtimeConnection()
+
+		if let bg = self.tableView.backgroundView {
+			bg.setNeedsLayout()
+			bg.layoutIfNeeded()
+		}
 	}
 
 	override func viewWillDisappear(_ animated: Bool) {
+		if self.navigationController?.viewControllers.index(of: self) == nil {
+			if self.channelSubscribed {
+				SocketConnection.sharedInstance.closeChannel()
+				self.channelSubscribed = false
+			}
+		}
 
+		super.viewWillDisappear(animated)
 	}
 
 	private func configuration() {
@@ -105,23 +158,32 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 
 		self.isLoading = true
 
+		self.showStatus()
+
+		self.noResultsView.setTitle(title: "Loading, please wait")
+		self.noResultsView.setActive(active: true)
+
 		log.verbose("Table: \(self.tableView.contentOffset)")
 		if page == 1 {
-			let p = CGPoint(x: 0, y: -64)
+						let p = CGPoint(x: 0, y: 0)
 			self.tableView.setContentOffset(p, animated: false)
 		}
 
 		self.statusPanel.setTitle(title: "Retrieving requests", active: true)
 
 		let api = API()
+
+		UIApplication.shared.isNetworkActivityIndicatorVisible = true
 		api.query(activity: self.activity, page: page, perPage: perPage, filters: self.filters, completed: { (success, requests) in
 
 			if self.channelSubscribed {
 				self.statusPanel.setTitle(title: "Streaming requests realtime", active: true)
 			} else {
+				UIApplication.shared.isNetworkActivityIndicatorVisible = false
 				self.statusPanel.setTitle(title: "Ready", active: false)
 			}
 
+			self.hideStatus()
 			self.isLoading = false
 
 			if success && requests != nil {
@@ -141,10 +203,28 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 
 				self.tableView.reloadData()
 			}
+
 		})
 	}
 
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+
+		if self.requests.count == 0 {
+			tableView.backgroundView?.isHidden = false
+
+			if self.isLoading {
+				self.noResultsView.setTitle(title: "Loading, please wait")
+				self.noResultsView.setActive(active: true)
+			} else {
+				self.noResultsView.setTitle(title: "No requests found")
+			}
+
+			self.noResultsView.setActive(active: self.isLoading)
+
+		} else {
+			tableView.backgroundView?.isHidden = true
+		}
+
 		return self.requests.count
 	}
 
@@ -199,6 +279,8 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 	private func setupRealtimeConnection() {
 		if activity.subscribe {
 			SocketConnection.sharedInstance.openChannel(channelName: self.activity.permalink, subscribed: { (channel) in
+				UIApplication.shared.isNetworkActivityIndicatorVisible = true
+
 				self.channelSubscribed = true
 				channel.onReceive = { (JSON: Any?, error: Error?) in
 					if error != nil {
@@ -208,11 +290,15 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 					}
 				}
 				channel.onRejected = {
+					UIApplication.shared.isNetworkActivityIndicatorVisible = false
+
 					self.channelSubscribed = true
 					log.error("Channel rejected")
 				}
 			})
 		} else {
+			UIApplication.shared.isNetworkActivityIndicatorVisible = false
+
 			SocketConnection.sharedInstance.closeChannel()
 			self.channelSubscribed = false
 		}
@@ -240,6 +326,10 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		}
 	}
 
+	override var preferredStatusBarStyle: UIStatusBarStyle {
+		return .lightContent
+	}
+
 	private func removeRequest(request: Request) {
 		self.tableView.beginUpdates()
 
@@ -262,8 +352,26 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		}
 	}
 
+	private func showStatus() {
+		UIView.animate(withDuration: 0.2, animations: {
+			self.statusPanelHeightConstraint.constant = 36
+			self.view.layoutIfNeeded()
+		})
+	}
+
+	private func hideStatus() {
+
+		DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+			self.statusPanelHeightConstraint.constant = 0
+
+			UIView.animate(withDuration: 0.2, animations: {
+				self.view.layoutIfNeeded()
+			})
+		}
+	}
+
 	deinit {
-		log.verbose("dinit")
 		SocketConnection.sharedInstance.closeChannel()
+		UIApplication.shared.isNetworkActivityIndicatorVisible = false
 	}
 }

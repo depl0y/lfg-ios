@@ -17,6 +17,7 @@ target 'lfg' do
   pod 'TTRangeSlider'
   pod 'DateToolsSwift', :git => 'https://github.com/MatthewYork/DateTools.git'
   pod 'ionicons'
+  pod 'SDWebImage', '~>3.8'  
 end
 
 post_install do |installer|

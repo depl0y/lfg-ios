@@ -195,7 +195,7 @@ public class Field: Object, Mappable, ValueFinder {
 		if let vid = value as? Int {
 			do {
 				let realm = try Realm()
-				let groups = realm.objects(Field.self).filter("lid = %d", vid)
+				let groups = realm.objects(Field.self).filter(NSPredicate(format: "lid = %d", vid))
 				return groups.first
 			} catch {
 				log.error("Error occured while fetching REALM")

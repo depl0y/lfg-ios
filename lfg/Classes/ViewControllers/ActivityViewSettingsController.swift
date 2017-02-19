@@ -194,7 +194,10 @@ class ActivityViewSettingsController: FormViewController {
 			})
 
 		}
+	}
 
+	override var preferredStatusBarStyle: UIStatusBarStyle {
+		return .lightContent
 	}
 
 	private func enableAlwaysConnected() {

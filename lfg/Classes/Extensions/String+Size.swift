@@ -27,3 +27,11 @@ extension String {
 		self.init(attributedString.string)
 	}
 }
+
+extension NSMutableAttributedString {
+	public func addWithFont(_ text: String, font: UIFont) {
+		let attrs: [String: AnyObject] = [NSFontAttributeName: font]
+		let boldString = NSMutableAttributedString(string:"\(text)", attributes:attrs)
+		self.append(boldString)
+	}
+}

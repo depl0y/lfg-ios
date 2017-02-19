@@ -62,7 +62,7 @@ public class FieldOption: Object, Mappable, ValueFinder {
 		if objects.count == 0 {
 			self.field = field
 			field.options.append(self)
-			realm.create(Field.self, value: self, update: true)
+			realm.create(FieldOption.self, value: self, update: true)
 			return self
 		} else {
 			let object = objects.first!

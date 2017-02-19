@@ -72,7 +72,6 @@ extension UIImage {
 	}
 
 	private static func iconWithText(text: String, iconSize: CGSize, color: UIColor) -> UIImage {
-		log.debug("Creating icon with text \(text)")
 		let scale = UIScreen.main.scale
 
 		UIGraphicsBeginImageContextWithOptions(iconSize, false, scale)

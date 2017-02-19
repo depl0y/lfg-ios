@@ -28,8 +28,6 @@ public class IconManager {
 		iconSize: CGFloat,
 		imageSize: CGSize) -> UIImage? {
 
-		log.debug("Creating icon for \(key)")
-
 		let img = UIImage.icon(
 			icon: iconName,
 			backgroundColor: backgroundColor,

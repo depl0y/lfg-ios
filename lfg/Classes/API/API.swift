@@ -68,6 +68,7 @@ class API {
 						let fieldGroupNames = response.result.value!.fieldGroups.map { $0.name }
 						FieldGroup.removeExcept(realm: realm, activity: activity, names: fieldGroupNames)
 						_ = response.result.value!.fieldGroups.map { $0.createOrUpdate(realm: realm, activity: activity) }
+						activity.lastConfigUpdate = Date()
 					}
 					completed(true)
 				} catch {
@@ -112,6 +113,7 @@ class API {
 
 		Alamofire.request(url, method: .post, parameters: parameters).responseObject { (response: DataResponse<QueryResponse>) in
 			if let result = response.result.value {
+
 				result.requests.forEach({ (request) in
 					request.activity = activity
 				})

@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class RequestViewController: UIViewController {
+public class RequestViewController: UIViewController, PureLayoutSetup {
 
 	private var request: Request!
 
@@ -16,6 +16,14 @@ public class RequestViewController: UIViewController {
 		super.init(nibName: nil, bundle: nil)
 		self.request = request
 
+		self.setupConstraints()
+		self.configureViews()
+	}
+
+	public func setupConstraints() {
+	}
+
+	public func configureViews() {
 		self.title = self.request.title
 	}
 
@@ -25,5 +33,9 @@ public class RequestViewController: UIViewController {
 
 	override public func viewDidLoad() {
 		super.viewDidLoad()
+	}
+
+	override public var preferredStatusBarStyle: UIStatusBarStyle {
+		return UIStatusBarStyle.default
 	}
 }

@@ -13,7 +13,7 @@ import SwiftyBeaver
 let log = SwiftyBeaver.self
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UINavigationControllerDelegate {
 
 	var window: UIWindow?
 
@@ -33,6 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		log.addDestination(console)
 
 		let navigationController = UINavigationController(rootViewController: ActivitiesViewController())
+		navigationController.delegate = self
 
 		self.window = UIWindow()
 		self.window?.rootViewController = navigationController
@@ -41,11 +42,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		_ = SocketConnection.sharedInstance
 
 		do {
+			let config = Realm.Configuration(
+				schemaVersion: 2,
+				migrationBlock: { _, oldSchemaVersion in
+					if oldSchemaVersion < 1 { }
+				}
+			)
+
+			Realm.Configuration.defaultConfiguration = config
 			let realm = try Realm()
 			log.verbose("\(realm.configuration.fileURL!)")
+/*
+			try realm.write {
+				let activities = realm.objects(Activity.self)
+
+				activities.forEach({ (activity) in
+					activity.remove(realm: realm)
+				})
+			}
+*/
 		} catch {
 			log.error("Error opening REALM")
 		}
+
+		UINavigationBar.appearance().barTintColor = UIColor(netHex: 0x249381)
+		UINavigationBar.appearance().tintColor = UIColor.white
+		UINavigationBar.appearance().isTranslucent = false
+
+		UINavigationBar.appearance().titleTextAttributes = [
+			NSForegroundColorAttributeName: UIColor.white,
+			NSFontAttributeName: UIFont.latoBoldWithSize(size: 15)
+		]
+
+		UIBarButtonItem.appearance().setTitleTextAttributes([
+			NSForegroundColorAttributeName: UIColor.white,
+			NSFontAttributeName: UIFont.latoBoldWithSize(size: 15)
+		], for: .normal)
+
+		UIApplication.shared.statusBarStyle = .lightContent
+
 		return true
 	}
 
@@ -63,5 +98,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 	func applicationWillTerminate(_ application: UIApplication) {
 		// Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+	}
+
+	func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+		viewController.edgesForExtendedLayout = []
 	}
 }

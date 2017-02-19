@@ -50,7 +50,7 @@ class FieldValueRow {
 	}
 }
 
-class RequestTableViewCell: UITableViewCell {
+class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 
 	private var cellPadding: CGFloat = 12
 
@@ -72,6 +72,8 @@ class RequestTableViewCell: UITableViewCell {
 
 	public var separatorView = UIView()
 
+	private var timestampTimer: Timer?
+
 	init(reuseIdentifier: String) {
 		super.init(style: .default, reuseIdentifier: reuseIdentifier)
 
@@ -81,6 +83,7 @@ class RequestTableViewCell: UITableViewCell {
 		self.addSubview(self.messageLabel)
 		self.addSubview(self.fieldValuesView)
 		self.addSubview(self.playerSeparator)
+		self.addSubview(self.playerLabel)
 		self.addSubview(self.groupLabel)
 		self.addSubview(self.booleansView)
 		self.addSubview(self.separatorView)
@@ -89,7 +92,7 @@ class RequestTableViewCell: UITableViewCell {
 		self.configureViews()
 	}
 
-	private func setupConstraints() {
+	func setupConstraints() {
 		self.modeLabel.autoPinEdge(.top, to: .top, of: self, withOffset: cellPadding)
 		self.modeLabel.autoPinEdge(.left, to: .left, of: self, withOffset: cellPadding)
 		self.modeLabel.autoSetDimensions(to: CGSize(width: 50, height: 30))
@@ -117,22 +120,27 @@ class RequestTableViewCell: UITableViewCell {
 		self.playerSeparator.autoPinEdge(.top, to: .bottom, of: self.fieldValuesView, withOffset: 4)
 		self.playerSeparator.autoSetDimension(.height, toSize: 14)
 
+		self.playerLabel.autoPinEdge(.left, to: .left, of: self, withOffset: cellPadding)
+		self.playerLabel.autoPinEdge(.right, to: .right, of: self, withOffset: cellPadding * -1)
+		self.playerLabel.autoPinEdge(.top, to: .bottom, of: self.playerSeparator, withOffset: 16)
+		self.playerLabel.autoSetDimension(.height, toSize: 16)
+
 		self.groupLabel.autoPinEdge(.left, to: .left, of: self, withOffset: cellPadding)
-		self.groupLabel.autoPinEdge(.top, to: .bottom, of: self.playerSeparator, withOffset: 18)
+		self.groupLabel.autoPinEdge(.top, to: .bottom, of: self.playerLabel, withOffset: 18)
 		self.groupLabel.autoMatch(.width, to: .width, of: self, withMultiplier: 0.5)
 		self.groupLabel.autoSetDimension(.height, toSize: 20)
+		self.groupLabel.autoPinEdge(.bottom, to: .bottom, of: self, withOffset: (cellPadding + 8) * -1)
 
 		self.booleansView.autoPinEdge(.left, to: .right, of: self.groupLabel, withOffset: 2)
 		self.booleansView.autoPinEdge(.right, to: .right, of: self, withOffset: cellPadding * -1)
-		self.booleansView.autoPinEdge(.top, to: .bottom, of: self.playerSeparator, withOffset: 10)
-		self.booleansView.autoPinEdge(.bottom, to: .bottom, of: self, withOffset: cellPadding * -1)
+		self.booleansView.autoPinEdge(.top, to: .bottom, of: self.playerLabel, withOffset: 10)
 
 		self.separatorView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .top)
 		self.separatorView.autoSetDimension(.height, toSize: 2)
 		self.separatorView.backgroundColor = UIColor(netHex: 0xe9e9e9)
 	}
 
-	private func configureViews() {
+	func configureViews() {
 		// LFG #33bfc9, LFM #d7c26e
 		self.backgroundColor = UIColor.clear
 
@@ -153,8 +161,12 @@ class RequestTableViewCell: UITableViewCell {
 		self.groupLabel.font = UIFont.latoBoldWithSize(size: 18)
 		self.groupLabel.textColor = UIColor(netHex: 0x757575)
 
+		self.playerLabel.textColor = UIColor(netHex: 0x249381)
+		self.playerLabel.font = UIFont(name: "Menlo-Bold", size: 14)
+
 		self.playerSeparator.setTitle(title: "PLAYER")
 
+		self.timestampTimer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(self.updateTimestamp), userInfo: nil, repeats: true)
 	}
 
 	required init?(coder aDecoder: NSCoder) {
@@ -182,13 +194,15 @@ class RequestTableViewCell: UITableViewCell {
 
 			self.modeLabel.backgroundColor = (self.request.lfg) ? UIColor(netHex: 0x33bfc9) : UIColor(netHex: 0xd7c26e)
 			self.modeLabel.text = (self.request.lfg) ? "LFG" : "LFM"
-			self.timestampLabel.text = self.request.timeStamp.timeAgoSinceNow //"\(self.request.timeStamp.timeAgoSinceNow) \(self.request.lid)"
+			self.timestampLabel.text = "\(self.request.timeStamp.timeAgo()) ago" //"\(self.request.timeStamp.timeAgoSinceNow) \(self.request.lid)"
 			self.titleLabel.text = request.title.uppercased()
-			self.messageLabel.text = "\(request.message) \(request.lid)"
+			self.messageLabel.text = request.message
 
 			if request.activityGroup != nil {
 				self.groupLabel.text = request.activityGroup?.name.uppercased()
 			}
+
+			self.playerLabel.text = request.username
 
 			var previousView: UIView? = nil
 
@@ -247,9 +261,27 @@ class RequestTableViewCell: UITableViewCell {
 						iconSize: 60,
 						imageSize: CGSize(width: 80, height: 80))
 				}
-				let imageView = UIImageView(image: image!)
-				self.booleansView.addSubview(imageView)
 
+				let sendMessageButton = UIButton(type: .custom)
+				sendMessageButton.setImage(image!, for: .normal)
+
+				self.booleansView.addSubview(sendMessageButton)
+
+				sendMessageButton.autoSetDimensions(to: CGSize(width: 36, height: 36))
+				sendMessageButton.autoPinEdge(.top, to: .top, of: self.booleansView)
+
+				if previousView == nil {
+					sendMessageButton.autoPinEdge(.right, to: .right, of: self.booleansView)
+				} else {
+					sendMessageButton.autoPinEdge(.right, to: .left, of: previousView!, withOffset: -4)
+				}
+				self.boolImages.append(sendMessageButton)
+				sendMessageButton.addTarget(self, action: #selector(self.messageClicked), for: UIControlEvents.touchUpInside)
+
+
+				//let imageView = UIImageView(image: image!)
+				//self.booleansView.addSubview(imageView)
+/*
 				imageView.autoSetDimensions(to: CGSize(width: 36, height: 36))
 				imageView.autoPinEdge(.top, to: .top, of: self.booleansView)
 
@@ -259,12 +291,32 @@ class RequestTableViewCell: UITableViewCell {
 					imageView.autoPinEdge(.right, to: .left, of: previousView!, withOffset: -4)
 				}
 				self.boolImages.append(imageView)
+*/
+				previousView = imageView
+			}
+
+			if previousView == nil {
 			}
 		}
 	}
 
+	@objc private func updateTimestamp() {
+		self.timestampLabel.text = self.request.timeStamp.timeAgo() //"\(self.request.timeStamp.timeAgoSinceNow) \(self.request.lid)"
+	}
+
 	override func setSelected(_ selected: Bool, animated: Bool) {
 		super.setSelected(selected, animated: animated)
+	}
+
+	func messageClicked() {
+		log.verbose("Message clicked")
+	}
+
+	deinit {
+		if self.timestampTimer != nil {
+			self.timestampTimer!.invalidate()
+			self.timestampTimer = nil
+		}
 	}
 
 }
