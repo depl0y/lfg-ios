@@ -18,6 +18,10 @@
 		AB4A41FB1E4AEDF900EB43C9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB4A41FA1E4AEDF900EB43C9 /* Assets.xcassets */; };
 		AB4A41FE1E4AEDF900EB43C9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB4A41FC1E4AEDF900EB43C9 /* LaunchScreen.storyboard */; };
 		AB4CB9961E58203700842BCE /* Array+Duplicates.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4CB9951E58203700842BCE /* Array+Duplicates.swift */; };
+		AB4CB9981E599DF200842BCE /* NewRequestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4CB9971E599DF200842BCE /* NewRequestViewController.swift */; };
+		AB4CB99A1E5B21AE00842BCE /* OAuthInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4CB9991E5B21AE00842BCE /* OAuthInfo.swift */; };
+		AB4CB99C1E5B34EC00842BCE /* CreateRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4CB99B1E5B34EC00842BCE /* CreateRequestResponse.swift */; };
+		AB4CB99E1E5B7DF700842BCE /* RemoveRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4CB99D1E5B7DF700842BCE /* RemoveRequestResponse.swift */; };
 		AB6D2F951E531CD5002F1A0F /* RequestTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6D2F941E531CD5002F1A0F /* RequestTableViewCell.swift */; };
 		AB6D2F981E531EC7002F1A0F /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6D2F971E531EC7002F1A0F /* UIColor+Hex.swift */; };
 		AB7DC0BA1E4AF04300B04AB2 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7DC0B91E4AF04300B04AB2 /* API.swift */; };
@@ -68,6 +72,10 @@
 		AB4A41FD1E4AEDF900EB43C9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AB4A41FF1E4AEDF900EB43C9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB4CB9951E58203700842BCE /* Array+Duplicates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Array+Duplicates.swift"; path = "Extensions/Array+Duplicates.swift"; sourceTree = "<group>"; };
+		AB4CB9971E599DF200842BCE /* NewRequestViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewRequestViewController.swift; sourceTree = "<group>"; };
+		AB4CB9991E5B21AE00842BCE /* OAuthInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OAuthInfo.swift; sourceTree = "<group>"; };
+		AB4CB99B1E5B34EC00842BCE /* CreateRequestResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateRequestResponse.swift; sourceTree = "<group>"; };
+		AB4CB99D1E5B7DF700842BCE /* RemoveRequestResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveRequestResponse.swift; sourceTree = "<group>"; };
 		AB6D2F941E531CD5002F1A0F /* RequestTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RequestTableViewCell.swift; path = Views/RequestTableViewCell.swift; sourceTree = "<group>"; };
 		AB6D2F971E531EC7002F1A0F /* UIColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIColor+Hex.swift"; path = "UIColor/UIColor+Hex.swift"; sourceTree = "<group>"; };
 		AB7DC0B91E4AF04300B04AB2 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
@@ -212,6 +220,7 @@
 				ABFDC0C91E4C458000570645 /* Transformers */,
 				ABFDC0B71E4AFBC100570645 /* ViewControllers */,
 				AB6D2F931E531CAE002F1A0F /* Views */,
+				AB4CB9991E5B21AE00842BCE /* OAuthInfo.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -241,8 +250,10 @@
 			children = (
 				ABFDC0C71E4B993000570645 /* ActivitiesResponse.swift */,
 				ABD2CA5A1E4C61D500016887 /* ActivityResponse.swift */,
+				AB4CB99B1E5B34EC00842BCE /* CreateRequestResponse.swift */,
 				AB498B8C1E4F422A00B9DD10 /* QueryResponse.swift */,
 				AB9553391E52E0740065D3FF /* WebsocketResponse.swift */,
+				AB4CB99D1E5B7DF700842BCE /* RemoveRequestResponse.swift */,
 			);
 			name = Responses;
 			sourceTree = "<group>";
@@ -253,8 +264,9 @@
 				ABFDC0B81E4AFBDE00570645 /* ActivitiesViewController.swift */,
 				ABD2CA641E4C7D7A00016887 /* ActivityViewController.swift */,
 				ABCBB4691E4D8C7200E242FF /* ActivityViewSettingsController.swift */,
-				AB95533B1E52E7290065D3FF /* RequestViewController.swift */,
+				AB4CB9971E599DF200842BCE /* NewRequestViewController.swift */,
 				ABD355341E5598F600529AC5 /* PureLayoutSetup.swift */,
+				AB95533B1E52E7290065D3FF /* RequestViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -440,13 +452,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				ABD355331E5580F700529AC5 /* StatusPanel.swift in Sources */,
+				AB4CB99A1E5B21AE00842BCE /* OAuthInfo.swift in Sources */,
 				AB3404B61E5610D100586DAE /* Date+Ago.swift in Sources */,
 				ABFDC0C61E4B901800570645 /* FieldOption.swift in Sources */,
 				AB6D2F951E531CD5002F1A0F /* RequestTableViewCell.swift in Sources */,
 				ABD2CA611E4C6A3B00016887 /* ListTransformer.swift in Sources */,
+				AB4CB99C1E5B34EC00842BCE /* CreateRequestResponse.swift in Sources */,
 				ABEFABCF1E57836000328A86 /* ObjectDetacher.swift in Sources */,
 				ABD2CA5B1E4C61D500016887 /* ActivityResponse.swift in Sources */,
 				ABD2CA651E4C7D7A00016887 /* ActivityViewController.swift in Sources */,
+				AB4CB99E1E5B7DF700842BCE /* RemoveRequestResponse.swift in Sources */,
 				ABFDC0CB1E4C459E00570645 /* DateTransformer.swift in Sources */,
 				ABFDC0C21E4B8DDC00570645 /* Field.swift in Sources */,
 				ABD3552A1E55685600529AC5 /* String+Size.swift in Sources */,
@@ -474,6 +489,7 @@
 				AB95533A1E52E0740065D3FF /* WebsocketResponse.swift in Sources */,
 				ABD355351E5598F600529AC5 /* PureLayoutSetup.swift in Sources */,
 				AB4A41F41E4AEDF900EB43C9 /* AppDelegate.swift in Sources */,
+				AB4CB9981E599DF200842BCE /* NewRequestViewController.swift in Sources */,
 				ABFDC0C41E4B8FA200570645 /* FieldGroup.swift in Sources */,
 				AB3404B81E56283F00586DAE /* ActivityCell.swift in Sources */,
 				ABFDC0C81E4B993000570645 /* ActivitiesResponse.swift in Sources */,

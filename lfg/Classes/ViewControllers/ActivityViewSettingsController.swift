@@ -37,7 +37,25 @@ class ActivityViewSettingsController: FormViewController {
 		let settingsButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.close(sender:)))
 		self.navigationItem.rightBarButtonItem = settingsButton
 
-		let generalSection = Section("General")
+		self.setupDefaultFilters()
+		self.generateFilters()
+
+		form +++ Section("Settings")
+			<<< SwitchRow("SUBSCRIBE") { row in
+				row.title = "Realtime updates"
+				}.onChange { row in
+					if row.value == true {
+						self.enableAlwaysConnected()
+					} else {
+						self.disableAlwaysConnected()
+					}
+				}.cellSetup { _, row in
+					row.value = self.activity.subscribe
+		}
+	}
+
+	private func setupDefaultFilters() {
+		let generalSection = Section("Details")
 
 		let groupRow = PushRow<ActivityGroup>("activity_group") { row in
 			row.title = "Platform"
@@ -45,6 +63,12 @@ class ActivityViewSettingsController: FormViewController {
 			if let groupId = self.filters[-1] as? Int {
 				row.value = self.activity.groups.filter(NSPredicate(format: "lid = %d", groupId)).first
 			}
+
+			_ = row.onPresent({ (_, svc) in
+				svc.selectableRowCellUpdate = { cell, _ in
+					cell.textLabel?.font = UIFont.latoWithSize(size: 14)
+				}
+			})
 		}
 
 		let lfgRow = PushRow<String>("lf_mode") { row in
@@ -53,6 +77,11 @@ class ActivityViewSettingsController: FormViewController {
 			if let mode = self.filters[-2] as? String {
 				row.value = mode
 			}
+			_ = row.onPresent({ (_, svc) in
+				svc.selectableRowCellUpdate = { cell, _ in
+					cell.textLabel?.font = UIFont.latoWithSize(size: 14)
+				}
+			})
 		}
 
 		let languageRow = PushRow<Language>("language") { row in
@@ -70,28 +99,18 @@ class ActivityViewSettingsController: FormViewController {
 			} catch {
 				log.error("Could not write tot realm")
 			}
+			_ = row.onPresent({ (_, svc) in
+				svc.selectableRowCellUpdate = { cell, _ in
+					cell.textLabel?.font = UIFont.latoWithSize(size: 14)
+				}
+			})
 		}
 
-		generalSection.append(groupRow)
 		generalSection.append(lfgRow)
+		generalSection.append(groupRow)
 		generalSection.append(languageRow)
 
 		self.form.append(generalSection)
-
-		self.generateFilters()
-
-		form +++ Section("Settings")
-			<<< SwitchRow("SUBSCRIBE") { row in
-				row.title = "Realtime updates"
-				}.onChange { row in
-					if row.value == true {
-						self.enableAlwaysConnected()
-					} else {
-						self.disableAlwaysConnected()
-					}
-				}.cellSetup { _, row in
-					row.value = self.activity.subscribe
-		}
 	}
 
 	private func saveFilterSettings() {
@@ -161,6 +180,10 @@ class ActivityViewSettingsController: FormViewController {
 							row.maximumValue = Float(field.max)
 							log.debug("Filter step: \(field.filterStep) for \(field.permalink)")
 							row.steps = UInt(field.max - field.min)
+							row.value = row.minimumValue
+							row.displayValueFor = {
+								return String(Int($0!))
+							}
 
 							if let value = self.filters[field.lid] as? Int {
 								row.value = Float(value)
@@ -184,6 +207,15 @@ class ActivityViewSettingsController: FormViewController {
 							if let optionId = self.filters[field.lid] as? Int {
 								row.value = field.options.filter(NSPredicate(format: "lid = %d", optionId)).first
 							}
+
+							_ = row.onPresent({ (_, svc) in
+								svc.selectableRowCellUpdate = { cell, row in
+									cell.textLabel?.font = UIFont.latoWithSize(size: 14)
+								}
+								svc.sectionKeyForValue = { option in
+									return option.group != nil ? option.group! : ""
+								}
+							})
 						}
 						section.append(row)
 

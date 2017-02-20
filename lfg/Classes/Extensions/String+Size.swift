@@ -46,4 +46,15 @@ extension NSMutableAttributedString {
 		let boldString = NSMutableAttributedString(string:"\(text)", attributes:attrs)
 		self.append(boldString)
 	}
+
+	/// Add text with a certain font to an attributed string
+	///
+	/// - Parameters:
+	///   - text: The text to add
+	///   - font: The font to use for the text that is appended
+	public func addWithFont(_ text: String, font: UIFont, color: UIColor) {
+		let attrs: [String: AnyObject] = [NSFontAttributeName: font, NSForegroundColorAttributeName: color]
+		let boldString = NSMutableAttributedString(string:"\(text)", attributes:attrs)
+		self.append(boldString)
+	}
 }

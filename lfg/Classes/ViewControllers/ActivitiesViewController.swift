@@ -73,11 +73,17 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 
 		self.navigationItem.rightBarButtonItem = sortButton
 
-		let deleteButton = UIBarButtonItem(title: "S", style: .plain, target: self, action: #selector(self.removeItem(sender:)))
-		deleteButton.setTitleTextAttributes(attributes, for: .normal)
-		deleteButton.title = String.fontAwesomeIcon(name: .trash)
+		let deleteButton = UIBarButtonItem(title: "", style: .plain, target: self, action: #selector(self.removeItem(sender:)))
+		//deleteButton.setTitleTextAttributes(attributes, for: .normal)
+		//deleteButton.title = String.fontAwesomeIcon(name: .trash)
 
 		self.navigationItem.leftBarButtonItem = deleteButton
+
+		let image = UIImage(named: "white-logo")
+		let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 40, height: 32))
+		imageView.image = image
+		imageView.contentMode = UIViewContentMode.scaleAspectFit
+		self.navigationItem.titleView = imageView
 	}
 
 	override func didReceiveMemoryWarning() {
@@ -155,6 +161,7 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 	}
 
 	@objc private func removeItem(sender: Any) {
+		/*
 		let previousActivities = Array(self.activities)
 
 		if self.activities.count > 0 {
@@ -162,6 +169,7 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		}
 
 		self.insertActivities(previousActivities: previousActivities, newActivities: self.activities) { }
+		*/
 	}
 
 	@objc private func toggleSort(sender: Any) {

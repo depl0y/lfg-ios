@@ -12,7 +12,7 @@ import PureLayout
 public class StatusPanel: UIView, PureLayoutSetup {
 
 	private var titleLabel = UILabel()
-	private var activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.white)
+	public var activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.white)
 	private var indicatorDimensions = [NSLayoutConstraint]()
 
 	public init() {
@@ -40,7 +40,7 @@ public class StatusPanel: UIView, PureLayoutSetup {
 	}
 
 	public func configureViews() {
-		self.backgroundColor = UIColor(netHex: 0x249381)
+		self.backgroundColor = UIColor(netHex: 0x4F4F4F)
 
 		self.activityIndicator.hidesWhenStopped = true
 

@@ -187,9 +187,8 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 	public var request: Request! {
 		didSet {
 
-			self.fieldValueRows.forEach { (row) in
-				row.fieldNameLabel.removeFromSuperview()
-				row.fieldValueLabel.removeFromSuperview()
+			self.fieldValuesView.subviews.forEach { (v) in
+				v.removeFromSuperview()
 			}
 			self.fieldValueRows.removeAll()
 
@@ -218,23 +217,21 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 				row.addViews(view: self.fieldValuesView, topView: previousView, topOffset: topOffset)
 				previousView = row.fieldNameLabel
 				self.fieldValueRows.append(row)
-
-				if request.listValues.count == 0 {
-					row.fieldValueLabel.autoPinEdge(.bottom, to: .bottom, of: self.fieldValuesView, withOffset: -6)
-				}
-
 			}
 
-			request.listValues.forEach { (fieldValue) in
+			let listValues = request.listValues
+
+			listValues.forEach { (fieldValue) in
 				let topOffset: CGFloat = (previousView == nil) ? 6 : 2
 
 				let row = FieldValueRow(fieldValue: fieldValue)
 				row.addViews(view: self.fieldValuesView, topView: previousView, topOffset: topOffset)
 				previousView = row.fieldNameLabel
 				self.fieldValueRows.append(row)
-				if request.listValues.last! == fieldValue {
-					row.fieldValueLabel.autoPinEdge(.bottom, to: .bottom, of: self.fieldValuesView, withOffset: -6)
-				}
+			}
+
+			if previousView != nil {
+				previousView!.autoPinEdge(.bottom, to: .bottom, of: self.fieldValuesView, withOffset: -6)
 			}
 
 			previousView = nil
@@ -295,20 +292,6 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 				}
 				self.boolImages.append(sendMessageButton)
 				sendMessageButton.addTarget(self, action: #selector(self.messageClicked), for: UIControlEvents.touchUpInside)
-
-				//let imageView = UIImageView(image: image!)
-				//self.booleansView.addSubview(imageView)
-/*
-				imageView.autoSetDimensions(to: CGSize(width: 36, height: 36))
-				imageView.autoPinEdge(.top, to: .top, of: self.booleansView)
-
-				if previousView == nil {
-					imageView.autoPinEdge(.right, to: .right, of: self.booleansView)
-				} else {
-					imageView.autoPinEdge(.right, to: .left, of: previousView!, withOffset: -4)
-				}
-				self.boolImages.append(imageView)
-*/
 				previousView = imageView
 			}
 

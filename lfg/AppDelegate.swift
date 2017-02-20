@@ -9,6 +9,7 @@
 import UIKit
 import RealmSwift
 import SwiftyBeaver
+import Eureka
 
 let log = SwiftyBeaver.self
 
@@ -43,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UINavigationControllerDel
 
 		do {
 			let config = Realm.Configuration(
-				schemaVersion: 2,
+				schemaVersion: 3,
 				migrationBlock: { _, oldSchemaVersion in
 					if oldSchemaVersion < 1 { }
 				}
@@ -80,7 +81,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UINavigationControllerDel
 		], for: .normal)
 
 		UIApplication.shared.statusBarStyle = .lightContent
-
+		self.setupFormStyle()
 		return true
 	}
 
@@ -103,4 +104,64 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UINavigationControllerDel
 	func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
 		viewController.edgesForExtendedLayout = []
 	}
+
+	private func setupFormStyle() {
+		let defaultFont = UIFont.latoWithSize(size: 14)
+		let defaultBoldFont = UIFont.latoBoldWithSize(size: 14)
+
+		AccountRow.defaultCellUpdate = { cell, row in
+			cell.textLabel?.font = defaultFont
+			cell.textField.font = defaultBoldFont
+		}
+
+		PushRow<ActivityGroup>.defaultCellUpdate = { cell, row in
+			cell.textLabel?.font = defaultFont
+			cell.detailTextLabel?.font = defaultBoldFont
+		}
+
+		PushRow<FieldOption>.defaultCellUpdate = { cell, row in
+			cell.textLabel?.font = defaultFont
+			cell.detailTextLabel?.font = defaultBoldFont
+		}
+
+		PushRow<String>.defaultCellUpdate = { cell, row in
+			cell.textLabel?.font = defaultFont
+			cell.detailTextLabel?.font = defaultBoldFont
+		}
+
+		PushRow<Language>.defaultCellUpdate = { cell, row in
+			cell.textLabel?.font = defaultFont
+			cell.detailTextLabel?.font = defaultBoldFont
+		}
+
+		SliderRow.defaultCellUpdate = { cell, row in
+			cell.textLabel?.font = defaultFont
+			cell.valueLabel.font = defaultBoldFont
+			cell.slider.tintColor = UIColor(netHex: 0x249381)
+		}
+
+		SwitchRow.defaultCellUpdate = { cell, row in
+			cell.textLabel?.font = defaultFont
+		}
+
+		ButtonRow.defaultCellUpdate = { cell, row in
+			cell.backgroundColor = UIColor(netHex: 0x249381)
+			cell.textLabel?.font = defaultBoldFont
+			cell.textLabel?.textColor = UIColor.white
+		}
+
+		TextAreaRow.defaultCellUpdate = { cell, row in
+			cell.textLabel?.font = defaultFont
+			cell.textView.font = defaultBoldFont
+			cell.placeholderLabel.font = defaultFont
+		}
+
+		SegmentedRow<String>.defaultCellUpdate = { cell, row in
+			cell.segmentedControl.setTitleTextAttributes([
+				NSFontAttributeName: defaultBoldFont,
+				NSForegroundColorAttributeName: UIColor(netHex: 0x249381) ], for: .normal)
+			cell.segmentedControl.tintColor = UIColor(netHex: 0x249381)
+		}
+	}
+
 }

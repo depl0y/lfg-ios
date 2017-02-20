@@ -223,4 +223,20 @@ public class Field: Object, Mappable, ValueFinder {
 		}
 		return nil
 	}
+
+	/// Find an object by the identifying property
+	///
+	/// - Parameter value: The value of the identifying property
+	/// - Returns: The object if any is found, otherwise nil
+	public static func findByPermalink(permalink: String) -> Field? {
+		do {
+			let realm = try Realm()
+			let groups = realm.objects(Field.self).filter(NSPredicate(format: "permalink = %@", permalink))
+			return groups.first
+		} catch {
+			log.error("Error occured while fetching REALM")
+			return nil
+		}
+	}
+
 }

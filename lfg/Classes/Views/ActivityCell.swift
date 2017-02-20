@@ -35,10 +35,18 @@ public class ActivityCell: UICollectionViewCell, PureLayoutSetup {
 
 	public func configureViews() {
 		self.backgroundColor = UIColor.clear
+		self.clipsToBounds = false
 
 		self.titleLabel.backgroundColor = UIColor.clear
 		self.titleLabel.textColor = UIColor(netHex: 0x7897A3)
 		self.titleLabel.font = UIFont.latoBoldWithSize(size: 14)
+
+		self.imageView.layer.shadowColor = UIColor.black.cgColor
+		self.imageView.layer.shadowOpacity = 0.5
+		self.imageView.layer.shadowOffset = CGSize(width: 0, height: 2)
+		self.imageView.layer.shadowRadius = 2
+		//		self.imageView.layer.shadowPath = UIBezierPath(rect: self.imageView.bounds).cgPath
+		//		self.imageView.layer.shouldRasterize = true
 	}
 
 	required public init?(coder aDecoder: NSCoder) {

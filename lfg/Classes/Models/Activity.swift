@@ -11,8 +11,9 @@ import RealmSwift
 import Realm
 import ObjectMapper
 
-public class Activity: Object, Mappable {
+public class Activity: Object, Mappable, ValueFinder {
 
+	dynamic var lid: Int = 0
 	dynamic var name: String = ""
 	dynamic var permalink: String = ""
 	dynamic var icon: String = ""
@@ -55,6 +56,7 @@ public class Activity: Object, Mappable {
 	}
 
 	public func mapping(map: Map) {
+		lid <- map["id"]
 		name <- map["name"]
 		permalink <- map["permalink"]
 		icon <- map["icon"]
@@ -113,6 +115,7 @@ public class Activity: Object, Mappable {
 			self.icon = source.icon
 		}
 
+		self.lid = source.lid
 		self.banner = source.banner
 		self.background = source.background
 		self.popularity = source.popularity
@@ -144,5 +147,22 @@ public class Activity: Object, Mappable {
 		objects.forEach { (o) in
 			o.remove(realm: realm)
 		}
+	}
+
+	/// Find an object by the identifying property
+	///
+	/// - Parameter value: The value of the identifying property
+	/// - Returns: The object if any is found, otherwise nil
+	public static func findByValue(value: Any) -> Activity? {
+		if let vid = value as? String {
+			do {
+				let realm = try Realm()
+				let groups = realm.objects(Activity.self).filter(NSPredicate(format: "permalink = %@", vid))
+				return groups.first
+			} catch {
+				log.error("Error occured while fetching REALM")
+			}
+		}
+		return nil
 	}
 }

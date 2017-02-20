@@ -23,6 +23,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 	let tableView = UITableView()
 	var discordInfoView: DiscordInfoView!
 	var statusPanel = StatusPanel()
+	var addButton = UIButton(type: .custom)
 	var noResultsView = NoResultsView()
 	var requests = [Request]()
 
@@ -55,8 +56,9 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 
 		self.view.backgroundColor = UIColor(netHex: 0xf6f7f9)
 
-		self.view.addSubview(self.statusPanel)
 		self.view.addSubview(self.tableView)
+		self.view.addSubview(self.addButton)
+		self.view.addSubview(self.statusPanel)
 
 		if self.activity.discordChannel != nil && self.activity.discordInviteCode != nil {
 			self.tableView.tableHeaderView = self.discordInfoView
@@ -76,7 +78,9 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 	}
 
 	func setupConstraints() {
-		self.statusPanel.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .top)
+		self.statusPanel.autoPinEdge(.bottom, to: .bottom, of: self.view)
+		self.statusPanel.autoPinEdge(.left, to: .left, of: self.view)
+		self.statusPanel.autoPinEdge(.right, to: .right, of: self.view)
 		self.statusPanelHeightConstraint = self.statusPanel.autoSetDimension(.height, toSize: 36)
 
 		if self.activity.discordChannel != nil && self.activity.discordInviteCode != nil {
@@ -90,15 +94,21 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 			}
 		}
 
+		self.addButton.autoPinEdge(.bottom, to: .top, of: self.statusPanel)
+		self.addButton.autoPinEdge(.left, to: .left, of: self.view)
+		self.addButton.autoPinEdge(.right, to: .right, of: self.view)
+		self.addButton.autoSetDimension(.height, toSize: 44)
+
 		self.tableView.autoPinEdge(.top, to: .top, of: self.view)
 		self.tableView.autoPinEdge(.left, to: .left, of: self.view)
 		self.tableView.autoPinEdge(.right, to: .right, of: self.view)
-		self.tableView.autoPinEdge(.bottom, to: .top, of: self.statusPanel)
+		self.tableView.autoPinEdge(.bottom, to: .top, of: self.addButton)
 
 	}
 
 	func configureViews() {
 		self.statusPanel.setTitle(title: "Loading", active: true, animate: false)
+		//self.statusPanel.layer.opacity = 0.7
 
 		self.tableView.backgroundColor = UIColor.clear
 		self.tableView.delegate = self
@@ -109,6 +119,14 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		self.tableView.tableFooterView = UIView()
 
 		self.tableView.backgroundView = self.noResultsView
+
+		self.addButton.backgroundColor = UIColor(netHex: 0x249381)
+		self.addButton.setTitleColor(UIColor.white, for: .normal)
+
+		let buttonTitle = NSMutableAttributedString()
+		buttonTitle.addWithFont("Add request", font: UIFont.latoBoldWithSize(size: 14), color: UIColor.white)
+		self.addButton.setAttributedTitle(buttonTitle, for: .normal)
+		self.addButton.addTarget(self, action: #selector(self.addRequestButton), for: UIControlEvents.touchUpInside)
 
 		let settingsButton = UIBarButtonItem(title: "E", style: .plain, target: self, action: #selector(self.showSettings(sender:)))
 
@@ -127,6 +145,8 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 			bg.setNeedsLayout()
 			bg.layoutIfNeeded()
 		}
+
+		self.setButton()
 	}
 
 	override func viewWillDisappear(_ animated: Bool) {
@@ -151,6 +171,23 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		}
 	}
 
+	private func setButton() {
+
+		let buttonTitle = NSMutableAttributedString()
+
+		let key = "request.\(self.activity.permalink)"
+		if let uniqueId = UserDefaults.standard.object(forKey: key) as? String {
+			buttonTitle.addWithFont("Remove request", font: UIFont.latoBoldWithSize(size: 14), color: UIColor.white)
+			self.addButton.backgroundColor = UIColor(netHex: 0xD9534F)
+		} else {
+			buttonTitle.addWithFont("Add request", font: UIFont.latoBoldWithSize(size: 14), color: UIColor.white)
+			self.addButton.backgroundColor = UIColor(netHex: 0x249381)
+		}
+		self.addButton.setAttributedTitle(buttonTitle, for: .normal)
+
+	}
+
+
 	private func query(page: Int = 1, perPage: Int = 30) {
 		if self.isLoading {
 			return
@@ -165,7 +202,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 
 		log.verbose("Table: \(self.tableView.contentOffset)")
 		if page == 1 {
-						let p = CGPoint(x: 0, y: 0)
+			let p = CGPoint(x: 0, y: 0)
 			self.tableView.setContentOffset(p, animated: false)
 		}
 
@@ -237,18 +274,19 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 			cell = RequestTableViewCell(reuseIdentifier: "request-cell")
 		}
 
+		cell!.selectionStyle = .none
 		cell!.request = request
 
 		return cell!
 	}
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		let request = self.requests[indexPath.row]
+		//let request = self.requests[indexPath.row]
 
-		let vc = RequestViewController(request: request)
-		self.navigationController?.pushViewController(vc, animated: true)
+		//let vc = RequestViewController(request: request)
+		//self.navigationController?.pushViewController(vc, animated: true)
 
-		tableView.deselectRow(at: indexPath, animated: true)
+		tableView.deselectRow(at: indexPath, animated: false)
 	}
 
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -316,7 +354,9 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 						self.removeRequest(request: response.request!)
 					} else {
 						self.tableView.beginUpdates()
-						self.requests.append(response.request!)
+						let request = response.request!
+						request.activity = self.activity
+						self.requests.append(request)
 						self.requests.sort()
 						self.tableView.reloadSections([0], with: UITableViewRowAnimation.fade)
 						self.tableView.endUpdates()
@@ -354,22 +394,47 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 
 	private func showStatus() {
 		UIView.animate(withDuration: 0.2, animations: {
+			self.statusPanel.activityIndicator.isHidden = false
+			self.statusPanel.activityIndicator.startAnimating()
+
 			self.statusPanelHeightConstraint.constant = 36
 			self.view.layoutIfNeeded()
 		})
+	}
+
+	@objc private func addRequestButton() {
+
+		let key = "request.\(self.activity.permalink)"
+		if let uniqueId = UserDefaults.standard.object(forKey: key) as? String {
+			let api = API()
+			api.remove(activity: self.activity, uniqueId: uniqueId, completed: { (success) in
+				if success {
+					UserDefaults.standard.removeObject(forKey: key)
+				}
+				self.setButton()
+			})
+		} else {
+			let vc = NewRequestViewController(activity: self.activity)
+			//self.navigationController?.pushViewController(vc, animated: true)
+			let nc = UINavigationController(rootViewController: vc)
+			self.present(nc, animated: true, completion: nil)
+		}
+
 	}
 
 	private func hideStatus() {
 
 		DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
 			self.statusPanelHeightConstraint.constant = 0
+			self.statusPanel.activityIndicator.stopAnimating()
+			self.statusPanel.activityIndicator.isHidden = true
 
 			UIView.animate(withDuration: 0.2, animations: {
 				self.view.layoutIfNeeded()
 			})
 		}
 	}
-
+	
 	deinit {
 		SocketConnection.sharedInstance.closeChannel()
 		UIApplication.shared.isNetworkActivityIndicatorVisible = false

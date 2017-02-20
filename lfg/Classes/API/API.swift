@@ -123,4 +123,59 @@ class API {
 		}
 	}
 
+	public func create(activity: Activity,
+	                   parameters: [String: Any],
+	                   completed: @escaping (_ success: Bool, _ uniqueId: String?, _ message: String?, _ diff: Int?) -> Void) {
+
+		let url = "\(baseUrl)requests/\(activity.permalink)"
+
+		log.debug("POST \(url) \(parameters)")
+
+		Alamofire.request(url, method: .post, parameters: parameters).responseObject { (response: DataResponse<CreateRequestResponse>) in
+
+			if let result = response.result.value, response.response?.statusCode == 200 {
+				completed(true, result.lid, nil, nil)
+			} else {
+				if response.data != nil && response.data!.count > 0 {
+					do {
+						if let json = try JSONSerialization.jsonObject(with: response.data!, options: JSONSerialization.ReadingOptions.allowFragments) as? [String: Any] {
+
+							log.debug("\(json)")
+
+							completed(false, nil, json["message"] as? String, json["diff"] as? Int)
+						}
+					} catch {
+						completed(false, nil, nil, nil)
+					}
+				} else {
+					if response.response?.statusCode == 403 {
+						completed(false, nil, "banned", nil)
+					} else {
+						completed(false, nil, nil, nil)
+					}
+				}
+			}
+			/*
+			} else {
+				completed(false, nil, nil, nil)
+			}*/
+		}
+	}
+
+	//https://lfg.pub/api/v2/requests/doom/bd02ff34-7c72-4352-bc5d-8cfb0db1dcec/remove
+
+	public func remove(activity: Activity, uniqueId: String, completed: @escaping (_ success: Bool) -> Void) {
+		let url = "\(baseUrl)requests/\(activity.permalink)/\(uniqueId)/remove"
+
+		log.debug("POST \(url) ")
+
+		Alamofire.request(url, method: .post, parameters: nil).responseObject { (response: DataResponse<RemoveRequestResponse>) in
+			if let result = response.result.value {
+				completed((result.status == "ok" || result.status == "record not found"))
+			} else {
+				completed(false)
+			}
+		}
+	}
+
 }

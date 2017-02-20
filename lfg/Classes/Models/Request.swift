@@ -56,7 +56,11 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 
 	public var message: String = ""
 
-	public var activity: Activity?
+	public var activity: Activity? {
+		didSet {
+			self.findFieldValues()
+		}
+	}
 
 	public var remove: Bool = false
 
@@ -69,6 +73,7 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 	public var listValues: [FieldValue] {
 		var result = self.fieldValues.filter({ (fieldValue) -> Bool in
 			return fieldValue.field != nil &&
+				fieldValue.shouldShow &&
 				fieldValue.field!.showInList &&
 				fieldValue.field!.permalink != "message" && !(fieldValue.field!.dataType == .Boolean && fieldValue.field!.icon != nil)
 		})
@@ -117,28 +122,31 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 		self.definitions <- map["definitions"]
 
 		self.timeStamp <- (map["timestamp"], DateTransformer(format: "yyyy-MM-dd'T'HH:mm:ss.SSSz"))
-		self.findFieldValues()
+		//self.findFieldValues()
 
 	}
 
 	///	Start resolving definitions
 	private func findFieldValues() {
 		do {
-			let realm = try Realm()
-			self.definitions.forEach({ (definition) in
-				if let fieldValue = FieldValue.resolve(definition: definition, realm: realm) {
-					self.fieldValues.append(fieldValue)
-				} else {
-					if let id = definition.lid as? String {
-						if id.lowercased() == "language" {
-							let language = Language.findByValue(value: definition.value)
-							if language != nil {
-								self.language = ObjectDetacher<Language>.detach(object: language!)
+			if self.activity != nil {
+				self.definitions.forEach({ (definition) in
+					if let fieldValue = FieldValue.resolve(definition: definition, activity: self.activity!) { //.resolve(definition: definition, realm: realm) {
+
+						self.fieldValues.append(fieldValue)
+
+					} else {
+						if let id = definition.lid as? String {
+							if id.lowercased() == "language" {
+								let language = Language.findByValue(value: definition.value)
+								if language != nil {
+									self.language = ObjectDetacher<Language>.detach(object: language!)
+								}
 							}
 						}
 					}
-				}
-			})
+				})
+			}
 		} catch {
 			log.error("Some error occured")
 		}

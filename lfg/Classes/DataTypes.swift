@@ -13,6 +13,7 @@ import Foundation
 	case Number = 1
 	case Option = 2
 	case Boolean = 3
+	case Text = 4
 
 	static func fromString(name: String) -> DataType {
 		if name == "number" {
@@ -21,6 +22,8 @@ import Foundation
 			return .Option
 		} else if name == "boolean" {
 			return .Boolean
+		} else if name == "text" {
+			return .Text
 		}
 		return .Unknown
 	}

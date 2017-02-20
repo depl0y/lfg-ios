@@ -6,7 +6,7 @@ PODS:
     - Alamofire (~> 4.1)
     - ObjectMapper (~> 2.0)
   - DateToolsSwift (2.0.0)
-  - Eureka (2.0.0-beta.1)
+  - Eureka (2.0.1)
   - FontAwesome.swift (1.0.0)
   - ionicons (2.0.3)
   - JKNotificationPanel (1.0.0)
@@ -30,7 +30,7 @@ DEPENDENCIES:
   - Alamofire (~> 4.3)
   - AlamofireObjectMapper (~> 4.0)
   - DateToolsSwift (from `https://github.com/MatthewYork/DateTools.git`)
-  - Eureka (~> 2.0.0-beta.1)
+  - Eureka (from `https://github.com/xmartlabs/Eureka.git`, branch `master`)
   - FontAwesome.swift
   - ionicons
   - JKNotificationPanel
@@ -45,18 +45,24 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   DateToolsSwift:
     :git: https://github.com/MatthewYork/DateTools.git
+  Eureka:
+    :branch: master
+    :git: https://github.com/xmartlabs/Eureka.git
 
 CHECKOUT OPTIONS:
   DateToolsSwift:
     :commit: d66631211128a10063a4973922a354c8e497482e
     :git: https://github.com/MatthewYork/DateTools.git
+  Eureka:
+    :commit: 555c1b29194cde5328663097a019fd1f00e7cc97
+    :git: https://github.com/xmartlabs/Eureka.git
 
 SPEC CHECKSUMS:
   ActionCableClient: c8a466410d31bfa14e7a9c209b539c1e2d026a5f
   Alamofire: 856a113053a7bc9cbe5d6367a555d773fc5cfef7
   AlamofireObjectMapper: 842d2eed43a4d0593ff0110d54ac86a170c4519c
   DateToolsSwift: 43bad526ba2209dd01a080201cfea8aca65bf4e0
-  Eureka: d014adf16406745e1a78d5790ea37ed130a0a8e5
+  Eureka: b40fbccd381b2b5d6a1c138d23806993a950d7d7
   FontAwesome.swift: 2d32a3d62195343c2004b7c9043294ed2948553a
   ionicons: ec1e86e6c3316bd9942a7f024080dd75c70dd6a5
   JKNotificationPanel: 2ed551f072be7f54e23a8c2526149c69ab23da9a
@@ -70,6 +76,6 @@ SPEC CHECKSUMS:
   SwiftyBeaver: 2b68694df862381235e32bcfc4ec991e26bf131d
   TTRangeSlider: 2f2ce4a33b32bb323c6575b9f5161c4664459c58
 
-PODFILE CHECKSUM: 17dfcab819ed589277b1f534f4eb9eb9169866a5
+PODFILE CHECKSUM: bf568b3963c19068ca82903d356c19c884746245
 
 COCOAPODS: 1.2.0

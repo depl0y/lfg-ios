@@ -35,12 +35,16 @@ public class FieldValue {
 	public init() {
 	}
 
-	public static func resolve(definition: Definition, realm: Realm) -> FieldValue? {
+	public var shouldShow: Bool {
+		if self.field?.dataType == .Number && self.number == self.field?.min {
+			return false
+		}
+		return true
+	}
 
+	public static func resolve(definition: Definition, fields: [Field]) -> FieldValue? {
 		if let id = definition.lid as? Int {
-			let fields = realm.objects(Field.self).filter(NSPredicate(format: "lid = %d", id))
-
-			if let field = fields.first {
+			if let field = fields.first(where: { return $0.lid == id }) {
 				let fieldValue = FieldValue()
 				fieldValue.field = ObjectDetacher<Field>.detach(object: field)
 
@@ -48,9 +52,7 @@ public class FieldValue {
 					fieldValue.number = number
 					return fieldValue
 				} else if let optionId = definition.value as? Int, field.dataType == .Option {
-					let options = realm.objects(FieldOption.self).filter(NSPredicate(format: "lid = %d", optionId))
-
-					if let option = options.first {
+					if let option = field.options.first(where: { return $0.lid == optionId }) {
 						fieldValue.option = ObjectDetacher<FieldOption>.detach(object: option)
 						return fieldValue
 					}
@@ -59,10 +61,15 @@ public class FieldValue {
 					return fieldValue
 				}
 			} else {
-				log.error("Could not find field with ID \(id)")
+				log.error("Field not found \(id)")
 			}
 		}
 		return nil
+	}
+
+	public static func resolve(definition: Definition, activity: Activity) -> FieldValue? {
+		let fields = activity.allFields()
+		return FieldValue.resolve(definition: definition, fields: fields)
 	}
 
 	public func toString() -> String {
