@@ -108,3 +108,75 @@ The results include all the languages supported by LFG Pub and all `activities` 
 | channel_name | The name of the discord channel for this game |
 | server_id | Our server id, used to let you join |
 | invite_code | A non-expired invite code, used to let you guys join our Discord server |
+
+### Fetch game configuration
+#### Request info
+URL: `https://lfg.pub/api/v2/activity/<permalink>`
+
+The `<permalink>` in the URL should be replaced with a permalink of a game fetched with the query above.
+
+#### Results
+This will return the field configuration for the specified game.
+
+```
+{
+  "fields" : [
+    {
+      "name" : "Game",
+      "permalink" : "game",
+      "objects" : [
+        {
+          "id" : 2,
+          "permalink" : "level",
+          "name" : "Level",
+          "description" : "Level of your guardian",
+          "group" : "Game",
+          "icon" : null,
+          "options" : [],
+          "datatype" : "number",
+          "min" : 0,
+          "max" : 40,
+          "sortorder" : 0,
+          "lfg" : true,
+          "lfm" : true,
+          "filterable" : true,
+          "show_in_list" : true,
+          "step" : 1,
+          "filter_step" : 1,
+          "value_prefix" : null,
+          "value_suffix" : null,
+          "display_as_checkboxes" : false
+        }
+      ]
+    },
+    {
+      "name" : "Player",
+      "permalink" : "player",
+      "objects" : [
+        {
+          "id" : 13,
+          "permalink" : "quickrun",
+          "name" : "Quickrun",
+          "description" : null,
+          "group" : "Player",
+          "icon" : null,
+          "options" : [],
+          "datatype" : "boolean",
+          "min" : 0,
+          "max" : 100,
+          "sortorder" : 4,
+          "lfg" : true,
+          "lfm" : true,
+          "filterable" : true,
+          "show_in_list" : true,
+          "step" : 1,
+          "filter_step" : 1,
+          "value_prefix" : null,
+          "value_suffix" : null,
+          "display_as_checkboxes" : false
+        }
+      ]
+    }
+  ]
+}
+```
