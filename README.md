@@ -72,7 +72,6 @@ The results include all the languages supported by LFG Pub and all `activities` 
 
 
 ##### Activity
-
 | Property | Description |
 |----------|-------------|
 | id | Internal identifier for the game |
@@ -126,17 +125,27 @@ This will return the field configuration for the specified game.
       "permalink" : "game",
       "objects" : [
         {
-          "id" : 2,
-          "permalink" : "level",
-          "name" : "Level",
-          "description" : "Level of your guardian",
+          "id" : 37,
+          "permalink" : "character-type",
+          "name" : "Character type",
+          "description" : null,
           "group" : "Game",
-          "icon" : null,
-          "options" : [],
-          "datatype" : "number",
+          "icon" : "ion-speedometer",
+          "options" : [
+            {
+              "id" : 6,
+              "permalink" : "hunter",
+              "name" : "Hunter",
+              "group" : null,
+              "lfg" : true,
+              "lfm" : true,
+              "sortorder" : 0
+            }, ...
+          ],
+          "datatype" : "option",
           "min" : 0,
-          "max" : 40,
-          "sortorder" : 0,
+          "max" : 100,
+          "sortorder" : 2,
           "lfg" : true,
           "lfm" : true,
           "filterable" : true,
@@ -146,7 +155,7 @@ This will return the field configuration for the specified game.
           "value_prefix" : null,
           "value_suffix" : null,
           "display_as_checkboxes" : false
-        }
+        }, ...
       ]
     },
     {
@@ -174,9 +183,52 @@ This will return the field configuration for the specified game.
           "value_prefix" : null,
           "value_suffix" : null,
           "display_as_checkboxes" : false
-        }
+        }, ...
       ]
-    }
+    }, ...
   ]
 }
+
 ```
+
+##### FieldGroup
+| Property | Description |
+|----------|-------------|
+| name | Name of this field group |
+| permalink | Identifier for this field group |
+| objects | A collection of fields that are within this group |
+
+##### Field
+| Property | Description |
+|----------|-------------|
+| id | Internal identifier for this field |
+| permalink | Permalink, used for creating a new request |
+| name | Display name |
+| description | Description (optional) |
+| group | The name of the group this field belongs to, same as the *parent* FieldGroup |
+| icon | For some fields and icon is defined, these are mostly fields with the `datatype` boolean |
+| options | If the field is op datatype **option**, this will be populated with options the user can choose from |
+| datatype | The datatype for the field, see **Datatypes** |
+| min | The minimum value for the field, **only used when datatype = number** |
+| max | The maximum value for the field, **only used when datatype = number** |
+| sortorder | Fields are displayed in a specific order, defined by this field |
+| lfg | Is this field available when creating an **LFG** request |
+| lfm | Is this field available when creating an **LFM** request |
+| filterable | Is this field also available as a filter, used while querying requests? |
+| show_in_list | Should this field be displayed in the request's property list? |
+| step | The steps a slider should take when dragging, **only used when datatype = number** |
+| filter_step | The steps a slider should take when dragging **when filtering**, **only used when datatype = number** |
+| value_prefix | Should the display value of this field be prefixed with a certain text? |
+| value_suffix | Should the display value of this field be suffixed with a certain text? |
+| display_as_checkboxes | Should this **option** field be displayed as multiple checkboxes, instead of one dropdown |
+
+##### FieldOption
+| Property | Description |
+|----------|-------------|
+| id | Internal identifier for this option |
+| permalink | Permalink |
+| name | Display name |
+| group | Is this option in a group, then a name is here |
+| lfg | Is this option available when creating an **LFG** request |
+| lfm | Is this option available when creating an **LFM** request |
+| sortorder | Options are displayed in a specific order, defined by this field |
