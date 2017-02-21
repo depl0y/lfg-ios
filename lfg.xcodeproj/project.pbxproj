@@ -22,6 +22,8 @@
 		AB4CB99A1E5B21AE00842BCE /* OAuthInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4CB9991E5B21AE00842BCE /* OAuthInfo.swift */; };
 		AB4CB99C1E5B34EC00842BCE /* CreateRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4CB99B1E5B34EC00842BCE /* CreateRequestResponse.swift */; };
 		AB4CB99E1E5B7DF700842BCE /* RemoveRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4CB99D1E5B7DF700842BCE /* RemoveRequestResponse.swift */; };
+		AB4CB9A01E5C003B00842BCE /* ActivitySectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4CB99F1E5C003B00842BCE /* ActivitySectionHeader.swift */; };
+		AB4CB9A21E5C0C1C00842BCE /* IndexPathChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4CB9A11E5C0C1C00842BCE /* IndexPathChange.swift */; };
 		AB6D2F951E531CD5002F1A0F /* RequestTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6D2F941E531CD5002F1A0F /* RequestTableViewCell.swift */; };
 		AB6D2F981E531EC7002F1A0F /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6D2F971E531EC7002F1A0F /* UIColor+Hex.swift */; };
 		AB7DC0BA1E4AF04300B04AB2 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7DC0B91E4AF04300B04AB2 /* API.swift */; };
@@ -76,6 +78,8 @@
 		AB4CB9991E5B21AE00842BCE /* OAuthInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OAuthInfo.swift; sourceTree = "<group>"; };
 		AB4CB99B1E5B34EC00842BCE /* CreateRequestResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateRequestResponse.swift; sourceTree = "<group>"; };
 		AB4CB99D1E5B7DF700842BCE /* RemoveRequestResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveRequestResponse.swift; sourceTree = "<group>"; };
+		AB4CB99F1E5C003B00842BCE /* ActivitySectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ActivitySectionHeader.swift; path = Views/ActivitySectionHeader.swift; sourceTree = "<group>"; };
+		AB4CB9A11E5C0C1C00842BCE /* IndexPathChange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexPathChange.swift; sourceTree = "<group>"; };
 		AB6D2F941E531CD5002F1A0F /* RequestTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RequestTableViewCell.swift; path = Views/RequestTableViewCell.swift; sourceTree = "<group>"; };
 		AB6D2F971E531EC7002F1A0F /* UIColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIColor+Hex.swift"; path = "UIColor/UIColor+Hex.swift"; sourceTree = "<group>"; };
 		AB7DC0B91E4AF04300B04AB2 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
@@ -193,6 +197,7 @@
 				ABD355321E5580F700529AC5 /* StatusPanel.swift */,
 				ABD355271E555F2C00529AC5 /* TitleSeparator.swift */,
 				ABEFABCB1E57394B00328A86 /* NoResultsView.swift */,
+				AB4CB99F1E5C003B00842BCE /* ActivitySectionHeader.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -221,6 +226,7 @@
 				ABFDC0B71E4AFBC100570645 /* ViewControllers */,
 				AB6D2F931E531CAE002F1A0F /* Views */,
 				AB4CB9991E5B21AE00842BCE /* OAuthInfo.swift */,
+				AB4CB9A11E5C0C1C00842BCE /* IndexPathChange.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -484,11 +490,13 @@
 				AB498B8B1E4F375500B9DD10 /* Request.swift in Sources */,
 				AB498B8F1E4F458600B9DD10 /* FieldValue.swift in Sources */,
 				AB7DC0BA1E4AF04300B04AB2 /* API.swift in Sources */,
+				AB4CB9A01E5C003B00842BCE /* ActivitySectionHeader.swift in Sources */,
 				ABEFABCC1E57394B00328A86 /* NoResultsView.swift in Sources */,
 				ABFDC0BC1E4B8BB800570645 /* Activity.swift in Sources */,
 				AB95533A1E52E0740065D3FF /* WebsocketResponse.swift in Sources */,
 				ABD355351E5598F600529AC5 /* PureLayoutSetup.swift in Sources */,
 				AB4A41F41E4AEDF900EB43C9 /* AppDelegate.swift in Sources */,
+				AB4CB9A21E5C0C1C00842BCE /* IndexPathChange.swift in Sources */,
 				AB4CB9981E599DF200842BCE /* NewRequestViewController.swift in Sources */,
 				ABFDC0C41E4B8FA200570645 /* FieldGroup.swift in Sources */,
 				AB3404B81E56283F00586DAE /* ActivityCell.swift in Sources */,
@@ -640,8 +648,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.sortedbits.lfgpub;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "8e9284dd-743f-407b-9911-a964ba091bae";
-				PROVISIONING_PROFILE_SPECIFIER = "LFG Pub AdHoc";
+				PROVISIONING_PROFILE = "7499f22d-e391-4ba1-a1fb-e98d63267c5d";
+				PROVISIONING_PROFILE_SPECIFIER = "LFG Pub Appstore";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

@@ -165,4 +165,34 @@ public class Activity: Object, Mappable, ValueFinder {
 		}
 		return nil
 	}
+
+	public static func released() -> [Activity] {
+		do {
+			let realm = try Realm()
+			let t = realm.objects(Activity.self).filter(NSPredicate(format: "releaseDate == nil"))
+			return Array(t)
+		} catch {
+			return []
+		}
+	}
+
+	public static func upcoming() -> [Activity] {
+		do {
+			let realm = try Realm()
+			let t = realm.objects(Activity.self).filter(NSPredicate(format: "releaseDate != nil")).sorted(byKeyPath: "releaseDate")
+			return Array(t)
+		} catch {
+			return []
+		}
+	}
+
+	public static func all() -> [Activity] {
+		do {
+			let realm = try Realm()
+			let t = realm.objects(Activity.self)
+			return Array(t)
+		} catch {
+			return []
+		}
+	}
 }

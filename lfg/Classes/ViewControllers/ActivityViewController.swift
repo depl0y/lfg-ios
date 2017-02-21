@@ -78,7 +78,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 	}
 
 	func setupConstraints() {
-		self.statusPanel.autoPinEdge(.bottom, to: .bottom, of: self.view)
+		self.statusPanel.autoPinEdge(.bottom, to: .top, of: self.addButton)
 		self.statusPanel.autoPinEdge(.left, to: .left, of: self.view)
 		self.statusPanel.autoPinEdge(.right, to: .right, of: self.view)
 		self.statusPanelHeightConstraint = self.statusPanel.autoSetDimension(.height, toSize: 36)
@@ -94,9 +94,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 			}
 		}
 
-		self.addButton.autoPinEdge(.bottom, to: .top, of: self.statusPanel)
-		self.addButton.autoPinEdge(.left, to: .left, of: self.view)
-		self.addButton.autoPinEdge(.right, to: .right, of: self.view)
+		self.addButton.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .top)
 		self.addButton.autoSetDimension(.height, toSize: 44)
 
 		self.tableView.autoPinEdge(.top, to: .top, of: self.view)
@@ -186,7 +184,6 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		self.addButton.setAttributedTitle(buttonTitle, for: .normal)
 
 	}
-
 
 	private func query(page: Int = 1, perPage: Int = 30) {
 		if self.isLoading {
@@ -434,7 +431,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 			})
 		}
 	}
-	
+
 	deinit {
 		SocketConnection.sharedInstance.closeChannel()
 		UIApplication.shared.isNetworkActivityIndicatorVisible = false

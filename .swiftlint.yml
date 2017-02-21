@@ -1,4 +1,8 @@
 line_length: 150
+type_body_length: 500
+function_parameter_count: 6
+file_length: 500
+cyclomatic_complexity: 20
 
 force_try:
   severity: warning # explicitly

@@ -138,10 +138,9 @@ class API {
 			} else {
 				if response.data != nil && response.data!.count > 0 {
 					do {
-						if let json = try JSONSerialization.jsonObject(with: response.data!, options: JSONSerialization.ReadingOptions.allowFragments) as? [String: Any] {
-
+						if let json = try JSONSerialization.jsonObject(with: response.data!,
+						                                               options: JSONSerialization.ReadingOptions.allowFragments) as? [String: Any] {
 							log.debug("\(json)")
-
 							completed(false, nil, json["message"] as? String, json["diff"] as? Int)
 						}
 					} catch {

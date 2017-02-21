@@ -20,6 +20,7 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 	let refreshControl = UIRefreshControl()
 
 	var activities = [Activity]()
+	var upcomingActivities = [Activity]()
 	// var fetchedActivities = [Activity]()
 
 	var sortPopular = false
@@ -57,6 +58,12 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		self.collectionView.dataSource = self
 		self.collectionView.delegate = self
 		self.collectionView.register(ActivityCell.self, forCellWithReuseIdentifier: "activity-cell")
+		self.collectionView.register(ActivitySectionHeader.self,
+		                             forSupplementaryViewOfKind: UICollectionElementKindSectionHeader,
+		                             withReuseIdentifier: "header-cell")
+		self.collectionView.register(UICollectionReusableView.self,
+		                             forSupplementaryViewOfKind: UICollectionElementKindSectionHeader,
+		                             withReuseIdentifier: "other-header")
 
 		guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
 		flowLayout.minimumInteritemSpacing = margin
@@ -95,17 +102,27 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 	}
 
 	func numberOfSections(in collectionView: UICollectionView) -> Int {
-		return 1
+		return 2
 	}
 
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return self.activities.count
+		if section == 0 {
+			return self.activities.count
+		} else {
+			return self.upcomingActivities.count
+		}
 	}
 
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "activity-cell", for: indexPath) as? ActivityCell {
-			let activity = self.activities[indexPath.row]
-			cell.activity = activity
+			if indexPath.section == 0 {
+				let activity = self.activities[indexPath.row]
+				cell.activity = activity
+			} else {
+				let activity = self.upcomingActivities[indexPath.row]
+				cell.activity = activity
+			}
+
 			return cell
 
 		} else {
@@ -129,13 +146,57 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		} else {
 			return CGSize(width: 100, height: 100)
 		}
+
 	}
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-		let activity = self.activities[indexPath.row]
-		let vc = ActivityViewController(activity: activity)
-		self.navigationController?.pushViewController(vc, animated: true)
+		if indexPath.section == 0 {
+			let activity = self.activities[indexPath.row]
+			let vc = ActivityViewController(activity: activity)
+			self.navigationController?.pushViewController(vc, animated: true)
+		} else {
+			let activity = self.upcomingActivities[indexPath.row]
+			let vc = ActivityViewController(activity: activity)
+			self.navigationController?.pushViewController(vc, animated: true)
+		}
 	}
+
+	func collectionView(_ collectionView: UICollectionView,
+	                    viewForSupplementaryElementOfKind kind: String,
+	                    at indexPath: IndexPath) -> UICollectionReusableView {
+
+		log.debug("Creating header")
+		if kind == UICollectionElementKindSectionHeader && indexPath.section == 1 {
+			if let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader,
+			                                                                withReuseIdentifier: "header-cell",
+			                                                                for: indexPath) as? ActivitySectionHeader {
+				header.setTitle(title: "UPCOMING RELEASES")
+				return header
+			} else {
+				return UICollectionReusableView()
+			}
+		} else {
+			return UICollectionReusableView()
+		}
+	}
+
+	func collectionView(_ collectionView: UICollectionView,
+	                    layout collectionViewLayout: UICollectionViewLayout,
+	                    referenceSizeForHeaderInSection section: Int) -> CGSize {
+		if section == 1 {
+			return CGSize(width:collectionView.frame.size.width, height:30.0)
+		} else {
+			return CGSize.zero
+		}
+	}
+
+	/*
+	func collectionView(collectionView: UICollectionView,
+	                    layout collectionViewLayout: UICollectionViewLayout,
+	                    referenceSizeForHeaderInSection section: Int) -> CGSize {
+		return CGSize(width: 300, height: 30)
+	}
+	*/
 
 	override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
 		super.viewWillTransition(to: size, with: coordinator)
@@ -184,7 +245,12 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		UserDefaults.standard.set(self.sortPopular, forKey: "sorting")
 		UserDefaults.standard.synchronize()
 
-		self.insertActivities(previousActivities: self.activities, newActivities: self.activities) { }
+		self.insertActivities(
+			previousActivities: self.activities,
+			newActivities: self.activities,
+			upcomingActivities: self.upcomingActivities,
+			newUpcomingActivities: self.upcomingActivities) { }
+
 	}
 
 	private func sort(activities: [Activity]) -> [Activity] {
@@ -200,51 +266,58 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		}
 	}
 
-	private func insertActivities(previousActivities: [Activity], newActivities: [Activity], completed: @escaping () -> Void) {
-		var currentOrdering = [Activity: Int]()
-		var newOrdering = [Activity: Int]()
+	private func sortByReleaseDate(activities: [Activity]) -> [Activity] {
+		return activities.sorted(by: { (lhs, rhs) -> Bool in
+			if lhs.releaseDate == nil && rhs.releaseDate == nil {
+				return lhs.name < rhs.name
+			} else {
+				return lhs.releaseDate! < rhs.releaseDate!
+			}
+		})
+	}
 
-		for (index, activity) in previousActivities.enumerated() {
-			currentOrdering[activity] = index
-		}
+	private func createChangeset(previousActivities: [Activity], newActivities: [Activity], section: Int) -> [IndexPathChange] {
 
-		let sortedActivities = self.sort(activities: newActivities)
+		let currentOrdering = self.createActivityOrderDictionary(activities: previousActivities)
+		let newOrdering = self.createActivityOrderDictionary(activities: newActivities)
 
-		for (index, activity) in sortedActivities.enumerated() {
-			newOrdering[activity] = index
-		}
-
-		var combinedActivities = sortedActivities + previousActivities
+		var combinedActivities = newActivities + previousActivities
 		combinedActivities.uniqInPlace()
 
-		if combinedActivities.count > 0 {
+		var result = [IndexPathChange]()
+
+		for activity in combinedActivities {
+			result.append(IndexPathChange(section: section, from: currentOrdering[activity], to: newOrdering[activity]))
+		}
+
+		return result
+
+	}
+
+	private func insertActivities(previousActivities: [Activity],
+	                              newActivities: [Activity],
+	                              upcomingActivities: [Activity],
+	                              newUpcomingActivities: [Activity],
+	                              completed: @escaping () -> Void) {
+
+		let sortedNewActivities = self.sort(activities: newActivities)
+		var changeSet = createChangeset(previousActivities: previousActivities, newActivities: sortedNewActivities, section: 0)
+
+		let sortedNewUpcomingActivities = self.sortByReleaseDate(activities: newUpcomingActivities)
+		let upcomingChanges = createChangeset(previousActivities: upcomingActivities, newActivities: sortedNewUpcomingActivities, section: 1)
+
+		changeSet += upcomingChanges
+
+		if changeSet.count > 0 {
 			self.collectionView.performBatchUpdates({
-				for activity in combinedActivities {
-					if currentOrdering[activity] != nil && newOrdering[activity] == nil {
-						// REMOVE
 
-						let from = IndexPath(item: currentOrdering[activity]!, section: 0)
-						self.collectionView.deleteItems(at: [ from ])
-
-					} else if currentOrdering[activity] == nil && newOrdering[activity] != nil {
-						// INSERT
-
-						let to = IndexPath(item: newOrdering[activity]!, section: 0)
-						self.collectionView.insertItems(at: [ to ])
-
-					} else if currentOrdering[activity] != nil && newOrdering[activity] != nil {
-						// MOVE
-
-						let fromActivity = IndexPath(item: currentOrdering[activity]!, section: 0)
-						let toActivity = IndexPath(item: newOrdering[activity]!, section: 0)
-
-						if self.collectionView.cellForItem(at: fromActivity) != nil {
-							self.collectionView.moveItem(at: fromActivity, to: toActivity)
-						}
-					}
+				for change in changeSet {
+					change.performChange(collectionView: self.collectionView)
 				}
 
-				self.activities = sortedActivities
+				self.activities = sortedNewActivities
+				self.upcomingActivities = sortedNewUpcomingActivities
+
 				self.collectionView.reloadData()
 
 			}) { (done) in
@@ -255,6 +328,16 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		} else {
 			completed()
 		}
+	}
+
+	private func createActivityOrderDictionary(activities: [Activity]) -> [Activity: Int] {
+		var result = [Activity: Int]()
+
+		for (index, activity) in activities.enumerated() {
+			result[activity] = index
+		}
+
+		return result
 	}
 
 	override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -272,14 +355,22 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 
 		do {
 			let previousActivities = Array(self.activities)
-			let realm = try Realm()
-			let fetchedActivities = Array(realm.objects(Activity.self))
+			let fetchedActivities = Activity.released()
 
-			self.insertActivities(previousActivities: previousActivities, newActivities: fetchedActivities, completed: {
-				let images = Array(self.activities).map { URL(string: $0.icon) }
+			let previousUpcoming = Array(self.upcomingActivities)
+			let fetchedUpcoming = Activity.upcoming()
+
+			self.insertActivities(previousActivities: previousActivities,
+			                      newActivities: fetchedActivities,
+			                      upcomingActivities: previousUpcoming,
+			                      newUpcomingActivities: fetchedUpcoming,
+			                      completed: {
+
+				let images = Array(Activity.all()).map { URL(string: $0.icon) }
 				SDWebImagePrefetcher.shared().prefetchURLs(images)
 				self.isLoading = false
 				completed()
+
 			})
 		} catch {
 			log.error("Error opening realm")
