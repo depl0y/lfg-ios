@@ -128,27 +128,23 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 
 	///	Start resolving definitions
 	private func findFieldValues() {
-		do {
-			if self.activity != nil {
-				self.definitions.forEach({ (definition) in
-					if let fieldValue = FieldValue.resolve(definition: definition, activity: self.activity!) { //.resolve(definition: definition, realm: realm) {
+		if self.activity != nil {
+			self.definitions.forEach({ (definition) in
+				if let fieldValue = FieldValue.resolve(definition: definition, activity: self.activity!) { //.resolve(definition: definition, realm: realm) {
 
-						self.fieldValues.append(fieldValue)
+					self.fieldValues.append(fieldValue)
 
-					} else {
-						if let id = definition.lid as? String {
-							if id.lowercased() == "language" {
-								let language = Language.findByValue(value: definition.value)
-								if language != nil {
-									self.language = ObjectDetacher<Language>.detach(object: language!)
-								}
+				} else {
+					if let id = definition.lid as? String {
+						if id.lowercased() == "language" {
+							let language = Language.findByValue(value: definition.value)
+							if language != nil {
+								self.language = ObjectDetacher<Language>.detach(object: language!)
 							}
 						}
 					}
-				})
-			}
-		} catch {
-			log.error("Some error occured")
+				}
+			})
 		}
 	}
 

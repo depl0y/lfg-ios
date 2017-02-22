@@ -124,7 +124,7 @@ public class NewRequestViewController: FormViewController {
 	private func generateFields() {
 
 		activity.fieldGroups.forEach { (fieldGroup) in
-			var section = Section(fieldGroup.name)
+			let section = Section(fieldGroup.name)
 			self.form.append(section)
 
 			fieldGroup.fields.sorted(byKeyPath: "sortorder").forEach({ (field) in

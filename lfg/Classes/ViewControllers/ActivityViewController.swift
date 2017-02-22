@@ -384,8 +384,10 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 			self.filters = filters
 			self.query()
 		}
-		let nav = UINavigationController(rootViewController: vc)
-		self.present(nav, animated: true) {
+		let nc = UINavigationController(rootViewController: vc)
+		nc.modalPresentationStyle = .currentContext
+
+		self.present(nc, animated: true) {
 		}
 	}
 
@@ -412,9 +414,9 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 			})
 		} else {
 			let vc = NewRequestViewController(activity: self.activity)
-			//self.navigationController?.pushViewController(vc, animated: true)
 			let nc = UINavigationController(rootViewController: vc)
-			self.present(nc, animated: true, completion: nil)
+			nc.modalPresentationStyle = .currentContext
+			self.navigationController?.present(nc, animated: true, completion: nil)
 		}
 
 	}

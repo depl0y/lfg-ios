@@ -33,11 +33,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UINavigationControllerDel
 		console.format = "$DHH:mm:ss$d $L [$N:$l] $M"
 		log.addDestination(console)
 
-		let navigationController = UINavigationController(rootViewController: ActivitiesViewController())
-		navigationController.delegate = self
-
 		self.window = UIWindow()
-		self.window?.rootViewController = navigationController
+
+		if UIDevice.current.userInterfaceIdiom == .pad {
+			self.window?.rootViewController = BaseiPadController()
+		} else {
+			let navigationController = UINavigationController(rootViewController: ActivitiesViewController())
+			navigationController.delegate = self
+			self.window?.rootViewController = navigationController
+		}
+
 		self.window?.makeKeyAndVisible()
 
 		_ = SocketConnection.sharedInstance
@@ -53,15 +58,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UINavigationControllerDel
 			Realm.Configuration.defaultConfiguration = config
 			let realm = try Realm()
 			log.verbose("\(realm.configuration.fileURL!)")
-/*
-			try realm.write {
-				let activities = realm.objects(Activity.self)
-
-				activities.forEach({ (activity) in
-					activity.remove(realm: realm)
-				})
-			}
-*/
 		} catch {
 			log.error("Error opening REALM")
 		}

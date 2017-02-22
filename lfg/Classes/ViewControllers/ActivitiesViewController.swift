@@ -29,6 +29,8 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 
 	var isLoading = false
 
+	public var selectionChanged: ((_ activity: Activity) -> Void)?
+
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
@@ -44,10 +46,16 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		self.loadActivities {
 			self.refresh(sender: self)
 		}
-}
+	}
+
+	override func viewWillLayoutSubviews() {
+		log.debug("Will layout")
+		self.collectionView.collectionViewLayout.invalidateLayout()
+	}
 
 	func setupConstraints() {
 		self.collectionView.autoPinEdgesToSuperviewEdges()
+
 	}
 
 	func configureViews() {
@@ -141,7 +149,6 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 
 			let ratio: CGFloat = 1.7180851064
 			let itemHeight = (itemWidth / ratio) + 18
-
 			return CGSize(width: itemWidth, height: itemHeight)
 		} else {
 			return CGSize(width: 100, height: 100)
@@ -150,12 +157,12 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 	}
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-		if indexPath.section == 0 {
-			let activity = self.activities[indexPath.row]
-			let vc = ActivityViewController(activity: activity)
-			self.navigationController?.pushViewController(vc, animated: true)
+
+		let activity = (indexPath.section == 0) ? self.activities[indexPath.row] : self.upcomingActivities[indexPath.row]
+
+		if self.selectionChanged != nil {
+			self.selectionChanged!(activity)
 		} else {
-			let activity = self.upcomingActivities[indexPath.row]
 			let vc = ActivityViewController(activity: activity)
 			self.navigationController?.pushViewController(vc, animated: true)
 		}
@@ -190,17 +197,22 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		}
 	}
 
+	func collectionView(_ collectionView: UICollectionView, shouldUpdateFocusIn context: UICollectionViewFocusUpdateContext) -> Bool {
+		return true
+	}
+
 	/*
 	func collectionView(collectionView: UICollectionView,
-	                    layout collectionViewLayout: UICollectionViewLayout,
-	                    referenceSizeForHeaderInSection section: Int) -> CGSize {
-		return CGSize(width: 300, height: 30)
+	layout collectionViewLayout: UICollectionViewLayout,
+	referenceSizeForHeaderInSection section: Int) -> CGSize {
+	return CGSize(width: 300, height: 30)
 	}
 	*/
 
 	override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
 		super.viewWillTransition(to: size, with: coordinator)
 		collectionView.collectionViewLayout.invalidateLayout()
+		collectionView.reloadData()
 	}
 
 	@objc private func refresh(sender: AnyObject) {
@@ -226,7 +238,7 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		let previousActivities = Array(self.activities)
 
 		if self.activities.count > 0 {
-			self.activities.remove(at: 0)
+		self.activities.remove(at: 0)
 		}
 
 		self.insertActivities(previousActivities: previousActivities, newActivities: self.activities) { }
@@ -353,28 +365,22 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 
 		self.isLoading = true
 
-		do {
-			let previousActivities = Array(self.activities)
-			let fetchedActivities = Activity.released()
+		let previousActivities = Array(self.activities)
+		let fetchedActivities = Activity.released()
 
-			let previousUpcoming = Array(self.upcomingActivities)
-			let fetchedUpcoming = Activity.upcoming()
+		let previousUpcoming = Array(self.upcomingActivities)
+		let fetchedUpcoming = Activity.upcoming()
 
-			self.insertActivities(previousActivities: previousActivities,
-			                      newActivities: fetchedActivities,
-			                      upcomingActivities: previousUpcoming,
-			                      newUpcomingActivities: fetchedUpcoming,
-			                      completed: {
+		self.insertActivities(previousActivities: previousActivities,
+		                      newActivities: fetchedActivities,
+		                      upcomingActivities: previousUpcoming,
+		                      newUpcomingActivities: fetchedUpcoming,
+		                      completed: {
 
-				let images = Array(Activity.all()).map { URL(string: $0.icon) }
-				SDWebImagePrefetcher.shared().prefetchURLs(images)
-				self.isLoading = false
-				completed()
-
-			})
-		} catch {
-			log.error("Error opening realm")
-			completed()
-		}
+								let images = Array(Activity.all()).map { URL(string: $0.icon) }
+								SDWebImagePrefetcher.shared().prefetchURLs(images)
+								self.isLoading = false
+								completed()
+		})
 	}
 }
