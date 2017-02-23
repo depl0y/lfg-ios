@@ -113,8 +113,16 @@ class API {
 
 		Alamofire.request(url, method: .post, parameters: parameters).responseObject { (response: DataResponse<QueryResponse>) in
 			if let result = response.result.value {
+
+				var index: TimeInterval = 0
 				result.requests.forEach({ (request) in
 					request.activity = activity
+					index += 1
+
+					if AppDelegate.anonymize {
+						request.timeStamp = Date(timeIntervalSinceNow: index * TimeInterval(-1))
+					}
+
 				})
 				completed(true, result.requests)
 			} else {

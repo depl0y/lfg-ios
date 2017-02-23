@@ -17,6 +17,7 @@ let log = SwiftyBeaver.self
 class AppDelegate: UIResponder, UIApplicationDelegate, UINavigationControllerDelegate {
 
 	var window: UIWindow?
+	static var anonymize: Bool = false
 
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 		// Override point for customization after application launch.
@@ -44,8 +45,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UINavigationControllerDel
 		}
 
 		self.window?.makeKeyAndVisible()
-
-		_ = SocketConnection.sharedInstance
 
 		do {
 			let config = Realm.Configuration(

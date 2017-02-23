@@ -11,6 +11,8 @@ import UIKit
 
 public class BaseiPadController: UISplitViewController, UISplitViewControllerDelegate, PureLayoutSetup {
 
+	private var currentActivity: Activity?
+
 	override public func viewDidLoad() {
 		super.viewDidLoad()
 		self.setupConstraints()
@@ -24,10 +26,21 @@ public class BaseiPadController: UISplitViewController, UISplitViewControllerDel
 	public func configureViews() {
 		let activitiesController = ActivitiesViewController()
 		activitiesController.selectionChanged = { (activity) in
+			if self.currentActivity != activity {
+				self.currentActivity = activity
+				if let nc = self.viewControllers[1] as? UINavigationController {
 
-			if let nc = self.viewControllers[1] as? UINavigationController {
-				let activityController = ActivityViewController(activity: activity)
-				nc.setViewControllers([activityController], animated: true)
+
+					let transition = CATransition()
+					transition.duration = 0.5
+					transition.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+					transition.type = kCATransitionFade
+					nc.view.layer.add(transition, forKey: nil)
+
+					let activityController = ActivityViewController(activity: activity)
+					nc.setViewControllers([activityController], animated: false)
+
+				}
 			}
 
 		}
@@ -42,11 +55,17 @@ public class BaseiPadController: UISplitViewController, UISplitViewControllerDel
 		return UIStatusBarStyle.default
 	}
 
-	public func splitViewController(_ splitViewController: UISplitViewController, show vc: UIViewController, sender: Any?) -> Bool {
+	public func splitViewController(_ splitViewController: UISplitViewController,
+	                                show viewController: UIViewController,
+	                                sender: Any?) -> Bool {
+
 		return true
 	}
-	public func splitViewController(_ splitViewController: UISplitViewController, separateSecondaryFrom primaryViewController: UIViewController) -> UIViewController? {
+	public func splitViewController(_ splitViewController: UISplitViewController,
+	                                separateSecondaryFrom primaryViewController: UIViewController) -> UIViewController? {
+
 		return NoActivitySelectedViewController()
 	}
+
 
 }

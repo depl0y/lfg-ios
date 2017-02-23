@@ -10,52 +10,6 @@ import UIKit
 import PureLayout
 import DateToolsSwift
 
-class FieldValueRow {
-	public var fieldValue: FieldValue?
-	public var fieldNameLabel = UILabel()
-	public var fieldValueLabel = UILabel()
-
-	init(fieldValue: FieldValue) {
-		self.fieldValue = fieldValue
-
-		if self.fieldValue != nil && self.fieldValue!.field != nil {
-			self.fieldNameLabel.text = self.fieldValue!.field!.name
-			self.fieldValueLabel.text = self.fieldValue!.toString()
-		}
-	}
-
-	init(fieldName: String, text: String) {
-		self.fieldNameLabel.text = fieldName
-		self.fieldValueLabel.text = text
-	}
-
-	func addViews(view: UIView, topView: UIView?, topOffset: CGFloat = 2) {
-		view.addSubview(self.fieldNameLabel)
-		view.addSubview(self.fieldValueLabel)
-
-		self.fieldNameLabel.font = UIFont.latoWithSize(size: 14)
-		self.fieldValueLabel.font = UIFont.latoWithSize(size: 14)
-
-		self.fieldNameLabel.textColor = UIColor(netHex: 0x757575)
-
-		self.fieldNameLabel.autoPinEdge(.left, to: .left, of: view)
-		self.fieldNameLabel.autoMatch(.width, to: .width, of: view, withMultiplier: 0.35)
-		self.fieldNameLabel.autoSetDimension(.height, toSize: 20)
-
-		self.fieldValueLabel.autoPinEdge(.right, to: .right, of: view)
-		self.fieldValueLabel.autoPinEdge(.left, to: .right, of: self.fieldNameLabel)
-		self.fieldValueLabel.autoMatch(.height, to: .height, of: self.fieldNameLabel)
-
-		if topView == nil {
-			self.fieldNameLabel.autoPinEdge(.top, to: .top, of: view, withOffset: topOffset)
-			self.fieldValueLabel.autoPinEdge(.top, to: .top, of: view, withOffset: topOffset)
-		} else {
-			self.fieldNameLabel.autoPinEdge(.top, to: .bottom, of: topView!, withOffset: topOffset)
-			self.fieldValueLabel.autoPinEdge(.top, to: .bottom, of: topView!, withOffset: topOffset)
-		}
-	}
-}
-
 class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 
 	private var cellPadding: CGFloat = 12
@@ -65,20 +19,19 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 	private var titleLabel = UILabel()
 	private var messageLabel = UILabel()
 
-	private var fieldValuesView = UIView()
-
-	private var fieldValueRows = [FieldValueRow]()
-	private var boolImages = [UIView]()
+	private var keyValuesView = KeyValuesStack()
 
 	public var playerLabel = UILabel()
 	public var groupLabel = UILabel()
-	public var booleansView = UIView()
+	public var booleansView = UIStackView()
 
 	public var playerSeparator = TitleSeparator()
 
 	public var separatorView = UIView()
 
 	private var timestampTimer: Timer?
+
+	public var messageButtonClicked: ((_ request: Request) -> Void)?
 
 	init(reuseIdentifier: String) {
 		super.init(style: .default, reuseIdentifier: reuseIdentifier)
@@ -87,7 +40,8 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 		self.addSubview(self.timestampLabel)
 		self.addSubview(self.titleLabel)
 		self.addSubview(self.messageLabel)
-		self.addSubview(self.fieldValuesView)
+		self.addSubview(self.keyValuesView)
+
 		self.addSubview(self.playerSeparator)
 		self.addSubview(self.playerLabel)
 		self.addSubview(self.groupLabel)
@@ -117,13 +71,13 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 		self.messageLabel.autoPinEdge(.right, to: .right, of: self, withOffset: cellPadding * -1)
 		self.messageLabel.autoPinEdge(.top, to: .bottom, of: self.titleLabel, withOffset: 2)
 
-		self.fieldValuesView.autoPinEdge(.left, to: .left, of: self, withOffset: cellPadding)
-		self.fieldValuesView.autoPinEdge(.right, to: .right, of: self, withOffset: cellPadding * -1)
-		self.fieldValuesView.autoPinEdge(.top, to: .bottom, of: self.messageLabel, withOffset: 6)
+		self.keyValuesView.autoPinEdge(.left, to: .left, of: self, withOffset: cellPadding)
+		self.keyValuesView.autoPinEdge(.right, to: .right, of: self, withOffset: cellPadding * -1)
+		self.keyValuesView.autoPinEdge(.top, to: .bottom, of: self.messageLabel, withOffset: 10)
 
 		self.playerSeparator.autoPinEdge(.left, to: .left, of: self, withOffset: cellPadding)
 		self.playerSeparator.autoPinEdge(.right, to: .right, of: self, withOffset: cellPadding * -1)
-		self.playerSeparator.autoPinEdge(.top, to: .bottom, of: self.fieldValuesView, withOffset: 6)
+		self.playerSeparator.autoPinEdge(.top, to: .bottom, of: self.keyValuesView, withOffset: 14)
 		self.playerSeparator.autoSetDimension(.height, toSize: 14)
 
 		self.playerLabel.autoPinEdge(.left, to: .left, of: self, withOffset: cellPadding)
@@ -137,7 +91,7 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 		self.groupLabel.autoSetDimension(.height, toSize: 20)
 		self.groupLabel.autoPinEdge(.bottom, to: .bottom, of: self, withOffset: (cellPadding + 8) * -1)
 
-		self.booleansView.autoPinEdge(.left, to: .right, of: self.groupLabel, withOffset: 2)
+		//		self.booleansView.autoPinEdge(.left, to: .right, of: self.groupLabel, withOffset: 2)
 		self.booleansView.autoPinEdge(.right, to: .right, of: self, withOffset: cellPadding * -1)
 		self.booleansView.autoPinEdge(.top, to: .bottom, of: self.playerLabel, withOffset: 10)
 
@@ -172,6 +126,9 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 
 		self.playerSeparator.setTitle(title: "PLAYER")
 
+		self.booleansView.alignment = .trailing
+		self.booleansView.spacing = 6
+
 		self.timestampTimer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(self.updateTimestamp), userInfo: nil, repeats: true)
 	}
 
@@ -186,17 +143,6 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 
 	public var request: Request! {
 		didSet {
-
-			self.fieldValuesView.subviews.forEach { (v) in
-				v.removeFromSuperview()
-			}
-			self.fieldValueRows.removeAll()
-
-			self.boolImages.forEach { (imageView) in
-				imageView.removeFromSuperview()
-			}
-			self.boolImages.removeAll()
-
 			self.modeLabel.backgroundColor = (self.request.lfg) ? UIColor(netHex: 0x33bfc9) : UIColor(netHex: 0xd7c26e)
 			self.modeLabel.text = (self.request.lfg) ? "LFG" : "LFM"
 			self.timestampLabel.text = "\(self.request.timeStamp.timeAgo()) ago" //"\(self.request.timeStamp.timeAgoSinceNow) \(self.request.lid)"
@@ -209,57 +155,28 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 
 			self.playerLabel.text = request.username
 
-			var previousView: UIView? = nil
+			self.keyValuesView.clear()
 
 			if request.language != nil {
-				let topOffset: CGFloat = 6
-				let row = FieldValueRow(fieldName: "Language", text: request.language!.title)
-				row.addViews(view: self.fieldValuesView, topView: previousView, topOffset: topOffset)
-				previousView = row.fieldNameLabel
-				self.fieldValueRows.append(row)
+				self.keyValuesView.addRow(key: "Language", value: request.language!.title)
 			}
 
 			let listValues = request.listValues
 
 			listValues.forEach { (fieldValue) in
-				let topOffset: CGFloat = (previousView == nil) ? 6 : 2
-
-				let row = FieldValueRow(fieldValue: fieldValue)
-				row.addViews(view: self.fieldValuesView, topView: previousView, topOffset: topOffset)
-				previousView = row.fieldNameLabel
-				self.fieldValueRows.append(row)
+				if fieldValue.field != nil {
+					self.keyValuesView.addRow(key: fieldValue.field!.name, value: fieldValue.toString())
+				}
 			}
 
-			if previousView != nil {
-				previousView!.autoPinEdge(.bottom, to: .bottom, of: self.fieldValuesView, withOffset: -6)
-			}
+			self.booleansView.subviews.forEach { $0.removeFromSuperview() }
 
-			previousView = nil
-
-			for boolValue in request.boolValues.reversed() {
-				if boolValue.bool != nil {
-					let image = boolValue.field?.iconImage(enabled: boolValue.bool!)
-
-					if image != nil {
-						let imageView = UIImageView(image: image!)
-						self.booleansView.addSubview(imageView)
-
-						imageView.autoSetDimensions(to: CGSize(width: 36, height: 36))
-						imageView.autoPinEdge(.top, to: .top, of: self.booleansView)
-
-						if previousView == nil {
-							imageView.autoPinEdge(.right, to: .right, of: self.booleansView)
-						} else {
-							imageView.autoPinEdge(.right, to: .left, of: previousView!, withOffset: -4)
-						}
-
-						if request.boolValues.last! == boolValue {
-							imageView.autoPinEdge(.bottom, to: .bottom, of: self.booleansView)
-						}
-						self.boolImages.append(imageView)
-
-						previousView = imageView
-					}
+			for boolValue in request.boolValues.filter({ $0.bool != nil }) {
+				if let image = boolValue.field?.iconImage(enabled: boolValue.bool!) {
+					let imageView = UIImageView(image: image)
+					imageView.contentMode = UIViewContentMode.scaleAspectFit
+					self.booleansView.addArrangedSubview(imageView)
+					imageView.autoSetDimensions(to: CGSize(width: 36, height: 36))
 				}
 			}
 
@@ -280,23 +197,12 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 				let sendMessageButton = UIButton(type: .custom)
 				sendMessageButton.setImage(image!, for: .normal)
 
-				self.booleansView.addSubview(sendMessageButton)
-
+				self.booleansView.addArrangedSubview(sendMessageButton)
 				sendMessageButton.autoSetDimensions(to: CGSize(width: 36, height: 36))
-				sendMessageButton.autoPinEdge(.top, to: .top, of: self.booleansView)
-
-				if previousView == nil {
-					sendMessageButton.autoPinEdge(.right, to: .right, of: self.booleansView)
-				} else {
-					sendMessageButton.autoPinEdge(.right, to: .left, of: previousView!, withOffset: -4)
-				}
-				self.boolImages.append(sendMessageButton)
 				sendMessageButton.addTarget(self, action: #selector(self.messageClicked), for: UIControlEvents.touchUpInside)
-				previousView = imageView
 			}
 
-			if previousView == nil {
-			}
+			self.setNeedsLayout()
 		}
 	}
 
@@ -310,6 +216,9 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 
 	func messageClicked() {
 		log.verbose("Message clicked")
+		if self.messageButtonClicked != nil {
+			self.messageButtonClicked!(self.request)
+		}
 	}
 
 	deinit {

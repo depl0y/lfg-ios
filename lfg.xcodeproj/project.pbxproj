@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		AB288E3A1E5D604500A1128D /* BaseiPadController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB288E391E5D604500A1128D /* BaseiPadController.swift */; };
 		AB288E3C1E5D61E400A1128D /* NoActivitySelectedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB288E3B1E5D61E400A1128D /* NoActivitySelectedViewController.swift */; };
+		AB288E3E1E5DBC5D00A1128D /* KeyValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB288E3D1E5DBC5D00A1128D /* KeyValueView.swift */; };
 		AB3404B61E5610D100586DAE /* Date+Ago.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3404B51E5610D100586DAE /* Date+Ago.swift */; };
 		AB3404B81E56283F00586DAE /* ActivityCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3404B71E56283F00586DAE /* ActivityCell.swift */; };
 		AB498B8B1E4F375500B9DD10 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB498B8A1E4F375500B9DD10 /* Request.swift */; };
@@ -65,6 +66,7 @@
 /* Begin PBXFileReference section */
 		AB288E391E5D604500A1128D /* BaseiPadController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseiPadController.swift; sourceTree = "<group>"; };
 		AB288E3B1E5D61E400A1128D /* NoActivitySelectedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoActivitySelectedViewController.swift; sourceTree = "<group>"; };
+		AB288E3D1E5DBC5D00A1128D /* KeyValueView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = KeyValueView.swift; path = Views/KeyValueView.swift; sourceTree = "<group>"; };
 		AB3404B51E5610D100586DAE /* Date+Ago.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Date+Ago.swift"; path = "Extensions/Date+Ago.swift"; sourceTree = "<group>"; };
 		AB3404B71E56283F00586DAE /* ActivityCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ActivityCell.swift; path = Views/ActivityCell.swift; sourceTree = "<group>"; };
 		AB498B8A1E4F375500B9DD10 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
@@ -196,12 +198,13 @@
 			isa = PBXGroup;
 			children = (
 				AB3404B71E56283F00586DAE /* ActivityCell.swift */,
+				AB4CB99F1E5C003B00842BCE /* ActivitySectionHeader.swift */,
 				ABEFABC91E57109800328A86 /* DiscordInfoView.swift */,
+				AB288E3D1E5DBC5D00A1128D /* KeyValueView.swift */,
+				ABEFABCB1E57394B00328A86 /* NoResultsView.swift */,
 				AB6D2F941E531CD5002F1A0F /* RequestTableViewCell.swift */,
 				ABD355321E5580F700529AC5 /* StatusPanel.swift */,
 				ABD355271E555F2C00529AC5 /* TitleSeparator.swift */,
-				ABEFABCB1E57394B00328A86 /* NoResultsView.swift */,
-				AB4CB99F1E5C003B00842BCE /* ActivitySectionHeader.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -240,8 +243,8 @@
 			children = (
 				ABEFABCD1E576E8700328A86 /* Responses */,
 				AB7DC0B91E4AF04300B04AB2 /* API.swift */,
-				AB9032901E4CA20D00FE9A69 /* SocketConnection.swift */,
 				ABD355251E54C93B00529AC5 /* IconManager.swift */,
+				AB9032901E4CA20D00FE9A69 /* SocketConnection.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -477,6 +480,7 @@
 				AB4CB99E1E5B7DF700842BCE /* RemoveRequestResponse.swift in Sources */,
 				ABFDC0CB1E4C459E00570645 /* DateTransformer.swift in Sources */,
 				ABFDC0C21E4B8DDC00570645 /* Field.swift in Sources */,
+				AB288E3E1E5DBC5D00A1128D /* KeyValueView.swift in Sources */,
 				ABD3552A1E55685600529AC5 /* String+Size.swift in Sources */,
 				ABCBB46A1E4D8C7200E242FF /* ActivityViewSettingsController.swift in Sources */,
 				ABD355311E556DB100529AC5 /* UIFont+Lato.swift in Sources */,
@@ -638,9 +642,9 @@
 				INFOPLIST_FILE = lfg/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.sortedbits.lfgpub;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sortedbits.lfg;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "fec91fd5-e098-423f-ae10-9436bcca4dfa";
+				PROVISIONING_PROFILE = "e3e95e3e-d02e-43ca-9ce3-67d3c8ecab44";
 				PROVISIONING_PROFILE_SPECIFIER = "LFG Pub Development";
 				SWIFT_VERSION = 3.0;
 			};
@@ -656,7 +660,7 @@
 				INFOPLIST_FILE = lfg/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.sortedbits.lfgpub;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sortedbits.lfg;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "7499f22d-e391-4ba1-a1fb-e98d63267c5d";
 				PROVISIONING_PROFILE_SPECIFIER = "LFG Pub Appstore";

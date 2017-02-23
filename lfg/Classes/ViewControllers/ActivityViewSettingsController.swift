@@ -51,7 +51,15 @@ class ActivityViewSettingsController: FormViewController {
 					}
 				}.cellSetup { _, row in
 					row.value = self.activity.subscribe
-		}
+			}
+			<<< SwitchRow("ANONYMIZE") { row in
+				row.title = "Anonymize requests"
+				row.value = AppDelegate.anonymize
+			}.onChange { row in
+				if let value = row.value {
+					AppDelegate.anonymize = value
+				}
+			}
 	}
 
 	private func setupDefaultFilters() {

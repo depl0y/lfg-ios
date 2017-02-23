@@ -11,40 +11,38 @@ import ActionCableClient
 import RealmSwift
 import JKNotificationPanel
 import PureLayout
+import SafariServices
 
 class ActivityViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, PureLayoutSetup {
 
 	var activity: Activity!
 	var cableChannel: Channel?
-	var noRequests = UILabel()
+	var client: ActionCableClient!
+	var requests = [Request]()
+	var filters = [Int: Any]()
+	var moreAvailable: Bool = false
+	var currentPage: Int = 1
+	var isLoading: Bool = false
 
-	let panel = JKNotificationPanel()
+	var statusPanelHeightConstraint: NSLayoutConstraint!
 
 	let tableView = UITableView()
+
 	var discordInfoView: DiscordInfoView!
 	var statusPanel = StatusPanel()
 	var addButton = UIButton(type: .custom)
 	var noResultsView = NoResultsView()
-	var requests = [Request]()
 
-	var filters = [Int: Any]()
-
-	var statusPanelHeightConstraint: NSLayoutConstraint!
-
-	private var moreAvailable: Bool = false
-	private var currentPage: Int = 1
-	private var isLoading: Bool = false
-
-	private var channelSubscribed = false
+	var upButton = UIButton(type: .custom)
+	var upButtonIsHidden = true
 
 	init(activity: Activity) {
 		super.init(nibName: nil, bundle: nil)
 
+		self.client = ActionCableClient(url: URL(string: "wss://lfg.pub/cable")!)
 		self.discordInfoView = DiscordInfoView(activity: activity, sender: self)
 		self.activity = activity
-		self.panel.timeUntilDismiss = 5
 		self.title = activity.name
-
 	}
 
 	required init?(coder aDecoder: NSCoder) {
@@ -60,21 +58,27 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		self.view.addSubview(self.addButton)
 		self.view.addSubview(self.statusPanel)
 
-		if self.activity.discordChannel != nil && self.activity.discordInviteCode != nil {
-			self.tableView.tableHeaderView = self.discordInfoView
-		}
+		self.view.addSubview(self.upButton)
 
 		self.setupConstraints()
 		self.configureViews()
 
-		self.setupRealtimeConnection()
-
 		if activity.lastConfigUpdate != nil && activity.lastConfigUpdate! > Date().addingTimeInterval(-300) {
 			self.query()
-			self.refreshFilters()
 		} else {
 			self.configuration()
 		}
+
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(self.applicationDidBecomeActive),
+			name: NSNotification.Name.UIApplicationDidBecomeActive,
+			object: nil)
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(self.applicationWillEnterForeground),
+			name: NSNotification.Name.UIApplicationWillEnterForeground,
+			object: nil)
 	}
 
 	func setupConstraints() {
@@ -83,17 +87,6 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		self.statusPanel.autoPinEdge(.right, to: .right, of: self.view)
 		self.statusPanelHeightConstraint = self.statusPanel.autoSetDimension(.height, toSize: 36)
 
-		if self.activity.discordChannel != nil && self.activity.discordInviteCode != nil {
-			self.discordInfoView.autoPinEdge(.top, to: .top, of: self.tableView)
-			self.discordInfoView.autoPinEdge(.left, to: .left, of: self.tableView)
-			self.discordInfoView.autoMatch(.width, to: .width, of: self.tableView)
-			if self.activity.discordChannel != nil && self.activity.discordInviteCode != nil {
-				self.discordInfoView.autoSetDimension(.height, toSize: 56)
-			} else {
-				self.discordInfoView.autoSetDimension(.height, toSize: 0)
-			}
-		}
-
 		self.addButton.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .top)
 		self.addButton.autoSetDimension(.height, toSize: 44)
 
@@ -101,6 +94,10 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		self.tableView.autoPinEdge(.left, to: .left, of: self.view)
 		self.tableView.autoPinEdge(.right, to: .right, of: self.view)
 		self.tableView.autoPinEdge(.bottom, to: .top, of: self.addButton)
+
+		self.upButton.autoPinEdge(.bottom, to: .bottom, of: self.tableView, withOffset: -10)
+		self.upButton.autoPinEdge(.right, to: .right, of: self.tableView, withOffset: -10)
+		self.upButton.autoSetDimensions(to: CGSize(width: 44, height: 44))
 
 	}
 
@@ -115,7 +112,6 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		self.tableView.estimatedRowHeight = 100
 		self.tableView.separatorStyle = .none
 		self.tableView.tableFooterView = UIView()
-
 		self.tableView.backgroundView = self.noResultsView
 
 		self.addButton.backgroundColor = UIColor(netHex: 0x249381)
@@ -134,25 +130,50 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 
 		self.navigationItem.rightBarButtonItem = settingsButton
 		self.edgesForExtendedLayout = []
+
+		self.upButton.backgroundColor = UIColor(netHex: 0x4F4F4F)
+		self.upButton.layer.cornerRadius = 5
+		self.upButton.isHidden = true
+
+		let upButtonTitle = NSMutableAttributedString()
+		upButtonTitle.addWithFont(String.fontAwesomeIcon(name: .chevronUp), font: UIFont.fontAwesome(ofSize: 20), color: UIColor.white)
+		self.upButton.setAttributedTitle(upButtonTitle, for: .normal)
+		self.upButton.addTarget(self, action: #selector(self.scrollToTop), for: .touchUpInside)
+	}
+
+	func applicationDidBecomeActive() {
+		self.viewWillAppear(false)
+		self.query()
+	}
+
+	func applicationWillEnterForeground() {
+	}
+
+	func scrollToTop() {
+		let top = NSIndexPath(row: Foundation.NSNotFound, section: 0)
+		self.tableView.scrollToRow(at: top as IndexPath, at: .top, animated: true)
 	}
 
 	override func viewWillAppear(_ animated: Bool) {
-		setupRealtimeConnection()
-
 		if let bg = self.tableView.backgroundView {
 			bg.setNeedsLayout()
 			bg.layoutIfNeeded()
 		}
-
 		self.setButton()
+
+		if self.activity.subscribe {
+			self.connectClient()
+		} else {
+			if self.client.isConnected && self.cableChannel != nil && self.cableChannel!.isSubscribed {
+				self.cableChannel!.unsubscribe()
+				self.disconnectClient()
+			}
+		}
 	}
 
 	override func viewWillDisappear(_ animated: Bool) {
 		if self.navigationController?.viewControllers.index(of: self) == nil {
-			if self.channelSubscribed {
-				SocketConnection.sharedInstance.closeChannel()
-				self.channelSubscribed = false
-			}
+			self.disconnectClient()
 		}
 
 		super.viewWillDisappear(animated)
@@ -163,7 +184,6 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		self.statusPanel.setTitle(title: "Downloading configuration", active: true)
 		api.configuration(activity: self.activity) { (success) in
 			if success {
-				self.refreshFilters()
 				self.query()
 			}
 		}
@@ -174,7 +194,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		let buttonTitle = NSMutableAttributedString()
 
 		let key = "request.\(self.activity.permalink)"
-		if let uniqueId = UserDefaults.standard.object(forKey: key) as? String {
+		if (UserDefaults.standard.object(forKey: key) as? String) != nil {
 			buttonTitle.addWithFont("Remove request", font: UIFont.latoBoldWithSize(size: 14), color: UIColor.white)
 			self.addButton.backgroundColor = UIColor(netHex: 0xD9534F)
 		} else {
@@ -197,10 +217,9 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		self.noResultsView.setTitle(title: "Loading, please wait")
 		self.noResultsView.setActive(active: true)
 
-		log.verbose("Table: \(self.tableView.contentOffset)")
 		if page == 1 {
-			let p = CGPoint(x: 0, y: 0)
-			self.tableView.setContentOffset(p, animated: false)
+			let top = NSIndexPath(row: Foundation.NSNotFound, section: 0)
+			self.tableView.scrollToRow(at: top as IndexPath, at: .top, animated: false)
 		}
 
 		self.statusPanel.setTitle(title: "Retrieving requests", active: true)
@@ -210,7 +229,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		UIApplication.shared.isNetworkActivityIndicatorVisible = true
 		api.query(activity: self.activity, page: page, perPage: perPage, filters: self.filters, completed: { (success, requests) in
 
-			if self.channelSubscribed {
+			if self.cableChannel != nil && self.cableChannel!.isSubscribed {
 				self.statusPanel.setTitle(title: "Streaming requests realtime", active: true)
 			} else {
 				UIApplication.shared.isNetworkActivityIndicatorVisible = false
@@ -228,146 +247,52 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 				}
 				self.requests.sort()
 				self.moreAvailable = requests!.count == perPage
-
-				if self.moreAvailable {
-					log.debug("More requests available")
-				} else {
-					log.debug("No more requests available")
-				}
-
 				self.tableView.reloadData()
 			}
 
 		})
 	}
 
-	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
-		if self.requests.count == 0 {
-			tableView.backgroundView?.isHidden = false
-
-			if self.isLoading {
-				self.noResultsView.setTitle(title: "Loading, please wait")
-				self.noResultsView.setActive(active: true)
-			} else {
-				self.noResultsView.setTitle(title: "No requests found")
-			}
-
-			self.noResultsView.setActive(active: self.isLoading)
-
-		} else {
-			tableView.backgroundView?.isHidden = true
-		}
-
-		return self.requests.count
-	}
-
-	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		let request = self.requests[indexPath.row]
-
-		var cell = tableView.dequeueReusableCell(withIdentifier: "request-cell") as? RequestTableViewCell
-
-		if cell == nil {
-			cell = RequestTableViewCell(reuseIdentifier: "request-cell")
-		}
-
-		cell!.selectionStyle = .none
-		cell!.request = request
-
-		return cell!
-	}
-
-	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		//let request = self.requests[indexPath.row]
-
-		//let vc = RequestViewController(request: request)
-		//self.navigationController?.pushViewController(vc, animated: true)
-
-		tableView.deselectRow(at: indexPath, animated: false)
-	}
-
 	func scrollViewDidScroll(_ scrollView: UIScrollView) {
-		if !self.isLoading && self.moreAvailable {
-			let currentOffset = scrollView.contentOffset.y
-			let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
+		let currentOffset = scrollView.contentOffset.y
+		let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
 
+		if !self.isLoading && self.moreAvailable {
 			if maximumOffset - currentOffset <= (scrollView.frame.size.height / 2) {
 				self.currentPage += 1
 				self.query(page: self.currentPage)
 			}
 		}
-	}
 
-	func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+		if currentOffset > scrollView.bounds.size.height && self.upButtonIsHidden {
+			self.upButtonIsHidden = false
+			self.upButton.isHidden = false
+			self.upButton.layer.opacity = 0
 
+			UIView.animate(withDuration: 0.4, animations: {
+				self.upButton.layer.opacity = 0.7
+			})
+		} else if currentOffset < scrollView.bounds.size.height && !self.upButtonIsHidden {
+			self.upButtonIsHidden = true
+			UIView.animate(withDuration: 0.4, animations: {
+				self.upButton.layer.opacity = 0
+			}, completion: { (done) in
+				if done {
+					self.upButton.isHidden = true
+				}
+			})
+		}
 	}
 
 	override func didReceiveMemoryWarning() {
 		super.didReceiveMemoryWarning()
-		// Dispose of any resources that can be recreated.
-	}
-
-	private func refreshFilters() {
-
-	}
-
-	private func setupRealtimeConnection() {
-		if activity.subscribe {
-			SocketConnection.sharedInstance.openChannel(channelName: self.activity.permalink, subscribed: { (channel) in
-				UIApplication.shared.isNetworkActivityIndicatorVisible = true
-
-				self.channelSubscribed = true
-				channel.onReceive = { (JSON: Any?, error: Error?) in
-					if error != nil {
-						log.error("\(error)")
-					} else {
-						self.parseSocketInfo(JSON: JSON)
-					}
-				}
-				channel.onRejected = {
-					UIApplication.shared.isNetworkActivityIndicatorVisible = false
-
-					self.channelSubscribed = true
-					log.error("Channel rejected")
-				}
-			})
-		} else {
-			UIApplication.shared.isNetworkActivityIndicatorVisible = false
-
-			SocketConnection.sharedInstance.closeChannel()
-			self.channelSubscribed = false
-		}
-	}
-
-	public func parseSocketInfo(JSON: Any?) {
-		if JSON == nil {
-			return
-		}
-
-		if let dict = JSON as? [String: Any] {
-			if let response = WebsocketResponse(JSON: dict) {
-				if response.request != nil {
-					if response.remove {
-						self.removeRequest(request: response.request!)
-					} else {
-						self.tableView.beginUpdates()
-						let request = response.request!
-						request.activity = self.activity
-						self.requests.append(request)
-						self.requests.sort()
-						self.tableView.reloadSections([0], with: UITableViewRowAnimation.fade)
-						self.tableView.endUpdates()
-					}
-				}
-			}
-		}
 	}
 
 	override var preferredStatusBarStyle: UIStatusBarStyle {
 		return .lightContent
 	}
 
-	private func removeRequest(request: Request) {
+	func removeRequest(request: Request) {
 		self.tableView.beginUpdates()
 
 		self.requests = self.requests.filter { (r) -> Bool in
@@ -375,7 +300,6 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		}
 
 		self.tableView.reloadSections([0], with: UITableViewRowAnimation.fade)
-
 		self.tableView.endUpdates()
 	}
 
@@ -435,7 +359,190 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 	}
 
 	deinit {
-		SocketConnection.sharedInstance.closeChannel()
 		UIApplication.shared.isNetworkActivityIndicatorVisible = false
+	}
+}
+
+// Websocket connection
+extension ActivityViewController {
+
+	func connectClient() {
+		if !self.client.isConnected {
+			self.client.origin = "https://lfg.pub"
+			self.client.onConnected = onWebsocketConnected
+			self.client.willConnect = onWebsocketWillConnect
+			self.client.onDisconnected = onWebsocketDisconnected
+			self.client.connect()
+		} else {
+			log.debug("Websocket already connected")
+			self.onWebsocketConnected()
+		}
+	}
+
+	func disconnectClient() {
+		log.debug("Disconnecting websocket")
+		if self.cableChannel != nil && self.cableChannel!.isSubscribed {
+			self.cableChannel!.unsubscribe()
+		}
+
+		if self.client.isConnected {
+			self.client.disconnect()
+		}
+	}
+
+	func openChannel() {
+		if !self.client.isConnected {
+			log.debug("Websocket is not connected")
+			return
+		}
+
+		if self.cableChannel != nil && self.cableChannel!.isSubscribed {
+			log.debug("Channel already connected")
+			return
+		}
+
+		log.debug("Opening channel \(self.activity.permalink)")
+		self.cableChannel = self.client.create("RequestChannel",
+		                                       identifier: [ "activity" : activity.permalink ],
+		                                       autoSubscribe: false,
+		                                       bufferActions: false)
+
+		UIApplication.shared.isNetworkActivityIndicatorVisible = true
+
+		self.cableChannel?.onReceive = { (JSON: Any?, error: Error?) in
+			if error != nil {
+				log.error("\(error)")
+			} else {
+				self.parseSocketInfo(JSON: JSON)
+			}
+		}
+
+		self.cableChannel?.onSubscribed = {
+			log.debug("Subscribed to \(self.activity.permalink)")
+		}
+
+		self.cableChannel?.onUnsubscribed = {
+			log.debug("Unsubscribed to \(self.activity.permalink)")
+		}
+
+		self.cableChannel?.onRejected = {
+			UIApplication.shared.isNetworkActivityIndicatorVisible = false
+			log.error("Channel rejected")
+		}
+
+		self.cableChannel?.subscribe()
+	}
+
+	func onWebsocketWillConnect() {
+	}
+
+	func onWebsocketConnected() {
+		log.debug("Websocket Client connected")
+		self.openChannel()
+	}
+
+	func onWebsocketDisconnected(error: ConnectionError?) {
+		log.debug("Websocket Client disconnected")
+	}
+
+	public func parseSocketInfo(JSON: Any?) {
+		if JSON == nil {
+			return
+		}
+
+		if let dict = JSON as? [String: Any] {
+			if let response = WebsocketResponse(JSON: dict) {
+				if response.request != nil {
+					if response.remove {
+						self.removeRequest(request: response.request!)
+					} else {
+						self.tableView.beginUpdates()
+						let request = response.request!
+						request.activity = self.activity
+						self.requests.append(request)
+						self.requests.sort()
+						self.tableView.reloadSections([0], with: UITableViewRowAnimation.fade)
+						self.tableView.endUpdates()
+					}
+				}
+			}
+		}
+	}
+}
+
+// Extension containing UITableViewDatasource / UITableViewDelegate
+extension ActivityViewController {
+
+	func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+		return 56
+	}
+
+	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+		if self.activity.discordChannel != nil && self.activity.discordInviteCode != nil {
+			return self.discordInfoView
+		} else {
+			return nil
+		}
+	}
+
+	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+
+		if self.requests.count == 0 {
+			tableView.backgroundView?.isHidden = false
+
+			if self.isLoading {
+				self.noResultsView.setTitle(title: "Loading, please wait")
+				self.noResultsView.setActive(active: true)
+			} else {
+				self.noResultsView.setTitle(title: "No requests found")
+			}
+
+			self.noResultsView.setActive(active: self.isLoading)
+
+		} else {
+			tableView.backgroundView?.isHidden = true
+		}
+
+		return self.requests.count
+	}
+
+	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		let request = self.requests[indexPath.row]
+
+		var cell = tableView.dequeueReusableCell(withIdentifier: "request-cell") as? RequestTableViewCell
+
+		if cell == nil {
+			cell = RequestTableViewCell(reuseIdentifier: "request-cell")
+		}
+
+		cell!.selectionStyle = .none
+		cell!.request = request
+
+		if request.activityGroupMessageLink != nil {
+			cell!.messageButtonClicked = { (request: Request) in
+
+				if let url = URL(string: request.activityGroupMessageLink!.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!) {
+
+					log.debug("Opening url: \(url)")
+					let sfc = SFSafariViewController(url: url)
+					self.present(sfc, animated: true, completion: nil)
+				} else {
+					log.error("URL invalid: \(request.activityGroupMessageLink!)")
+				}
+			}
+		} else {
+			cell!.messageButtonClicked = nil
+		}
+
+		return cell!
+	}
+
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		//let request = self.requests[indexPath.row]
+
+		//let vc = RequestViewController(request: request)
+		//self.navigationController?.pushViewController(vc, animated: true)
+
+		tableView.deselectRow(at: indexPath, animated: false)
 	}
 }

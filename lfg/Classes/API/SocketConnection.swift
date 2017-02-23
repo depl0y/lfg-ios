@@ -10,10 +10,10 @@ import Foundation
 import ActionCableClient
 
 /// Singleton class used to set up a websocket connection to the server
-public class SocketConnection {
+public class SocketConnection222 {
 
     /// Singleton....
-    static let sharedInstance = SocketConnection()
+    static let sharedInstance = SocketConnection222()
 
     private var client = ActionCableClient(url: URL(string: "wss://lfg.pub/cable")!)
 
@@ -38,10 +38,12 @@ public class SocketConnection {
 	public func openChannel(channelName: String, subscribed: @escaping (_ channel: Channel) -> Void) {
         let channelIdentifier = ["activity": channelName]
 
-		if self.connectedChannel != nil {
+		if self.connectedChannel != nil && self.client.isConnected {
+			log.debug("Channel still connected")
 			if let connectedChannelName = self.connectedChannel!.identifier?["activity"] as? String {
 				if connectedChannelName == channelName {
 					subscribed(self.connectedChannel!)
+					return
 				}
 			} else {
 				log.debug("Unsubscribed from previous channel")
@@ -67,6 +69,10 @@ public class SocketConnection {
 			self.connectedChannel!.unsubscribe()
 		}
 		self.connectedChannel = nil
+	}
+
+	private func isConnected() -> Bool {
+		return self.client.isConnected
 	}
 
     private func clientWillConnect() {

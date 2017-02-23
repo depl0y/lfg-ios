@@ -1,5 +1,5 @@
 source 'https://github.com/CocoaPods/Specs.git'
-platform :ios, '8.0'
+platform :ios, '9.0'
 use_frameworks!
 
 target 'lfg' do
@@ -11,14 +11,14 @@ target 'lfg' do
   pod 'PureLayout'
   pod 'ActionCableClient'
   pod 'SwiftyBeaver'
-  # pod 'Eureka', '~> 2.0.0-beta.1' #, :git => 'https://github.com/xmartlabs/Eureka.git', :branch => 'swift3.1'
   pod 'Eureka', :git => 'https://github.com/xmartlabs/Eureka.git', :branch => 'master'
   pod 'JKNotificationPanel'
   pod 'FontAwesome.swift'
   pod 'TTRangeSlider'
   pod 'DateToolsSwift', :git => 'https://github.com/MatthewYork/DateTools.git'
   pod 'ionicons'
-  pod 'SDWebImage', '~>3.8'  
+  pod 'SDWebImage', '~>3.8'
+  pod 'Fakery'
 end
 
 post_install do |installer|

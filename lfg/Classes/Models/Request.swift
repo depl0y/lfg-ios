@@ -10,6 +10,7 @@ import Foundation
 import ObjectMapper
 import Realm
 import RealmSwift
+import Fakery
 
 public class Definition: Mappable {
 
@@ -123,6 +124,12 @@ public class Request: Mappable, Equatable, Hashable, Comparable {
 
 		self.timeStamp <- (map["timestamp"], DateTransformer(format: "yyyy-MM-dd'T'HH:mm:ss.SSSz"))
 		//self.findFieldValues()
+
+		if AppDelegate.anonymize {
+			let faker = Faker()
+			self.username = faker.name.name()
+			self.message = faker.lorem.sentence(wordsAmount: 20)
+		}
 
 	}
 

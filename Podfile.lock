@@ -7,6 +7,7 @@ PODS:
     - ObjectMapper (~> 2.0)
   - DateToolsSwift (2.0.0)
   - Eureka (2.0.1)
+  - Fakery (2.0.0)
   - FontAwesome.swift (1.0.0)
   - ionicons (2.0.3)
   - JKNotificationPanel (1.0.0)
@@ -31,6 +32,7 @@ DEPENDENCIES:
   - AlamofireObjectMapper (~> 4.0)
   - DateToolsSwift (from `https://github.com/MatthewYork/DateTools.git`)
   - Eureka (from `https://github.com/xmartlabs/Eureka.git`, branch `master`)
+  - Fakery
   - FontAwesome.swift
   - ionicons
   - JKNotificationPanel
@@ -63,6 +65,7 @@ SPEC CHECKSUMS:
   AlamofireObjectMapper: 842d2eed43a4d0593ff0110d54ac86a170c4519c
   DateToolsSwift: 43bad526ba2209dd01a080201cfea8aca65bf4e0
   Eureka: b40fbccd381b2b5d6a1c138d23806993a950d7d7
+  Fakery: 97b99c23937d2e025d9135c75e2b17351ccd5031
   FontAwesome.swift: 2d32a3d62195343c2004b7c9043294ed2948553a
   ionicons: ec1e86e6c3316bd9942a7f024080dd75c70dd6a5
   JKNotificationPanel: 2ed551f072be7f54e23a8c2526149c69ab23da9a
@@ -76,6 +79,6 @@ SPEC CHECKSUMS:
   SwiftyBeaver: 2b68694df862381235e32bcfc4ec991e26bf131d
   TTRangeSlider: 2f2ce4a33b32bb323c6575b9f5161c4664459c58
 
-PODFILE CHECKSUM: bf568b3963c19068ca82903d356c19c884746245
+PODFILE CHECKSUM: ad1a453ee4bfd4905304df544db6be22ad87da1c
 
 COCOAPODS: 1.2.0
