@@ -29,8 +29,6 @@ public class BaseiPadController: UISplitViewController, UISplitViewControllerDel
 			if self.currentActivity != activity {
 				self.currentActivity = activity
 				if let nc = self.viewControllers[1] as? UINavigationController {
-
-
 					let transition = CATransition()
 					transition.duration = 0.5
 					transition.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
@@ -39,7 +37,6 @@ public class BaseiPadController: UISplitViewController, UISplitViewControllerDel
 
 					let activityController = ActivityViewController(activity: activity)
 					nc.setViewControllers([activityController], animated: false)
-
 				}
 			}
 
@@ -66,6 +63,4 @@ public class BaseiPadController: UISplitViewController, UISplitViewControllerDel
 
 		return NoActivitySelectedViewController()
 	}
-
-
 }
