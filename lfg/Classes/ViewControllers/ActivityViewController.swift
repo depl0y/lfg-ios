@@ -9,7 +9,6 @@
 import UIKit
 import ActionCableClient
 import RealmSwift
-import JKNotificationPanel
 import PureLayout
 import SafariServices
 
@@ -27,6 +26,8 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 	var statusPanelHeightConstraint: NSLayoutConstraint!
 
 	let tableView = UITableView()
+	let refreshControl = UIRefreshControl()
+
 
 	var discordInfoView: DiscordInfoView!
 	var statusPanel = StatusPanel()
@@ -55,6 +56,8 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		self.view.backgroundColor = UIColor(netHex: 0xf6f7f9)
 
 		self.view.addSubview(self.tableView)
+		self.tableView.addSubview(refreshControl)
+
 		self.view.addSubview(self.addButton)
 		self.view.addSubview(self.statusPanel)
 
@@ -62,6 +65,11 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 
 		self.setupConstraints()
 		self.configureViews()
+
+		let defaultValues = DefaultValues.getFilters(key: self.activity.permalink)
+		if defaultValues != nil {
+			self.filters = defaultValues!.toFilters()
+		}
 
 		if activity.lastConfigUpdate != nil && activity.lastConfigUpdate! > Date().addingTimeInterval(-300) {
 			self.query()
@@ -79,6 +87,7 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 			selector: #selector(self.applicationWillEnterForeground),
 			name: NSNotification.Name.UIApplicationWillEnterForeground,
 			object: nil)
+
 	}
 
 	func setupConstraints() {
@@ -113,6 +122,9 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		self.tableView.separatorStyle = .none
 		self.tableView.tableFooterView = UIView()
 		self.tableView.backgroundView = self.noResultsView
+
+		refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+		refreshControl.addTarget(self, action: #selector(self.refresh(sender:)), for: UIControlEvents.valueChanged)
 
 		self.addButton.backgroundColor = UIColor(netHex: 0x249381)
 		self.addButton.setTitleColor(UIColor.white, for: .normal)
@@ -179,6 +191,10 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		super.viewWillDisappear(animated)
 	}
 
+	@objc private func refresh(sender: AnyObject) {
+		self.query()
+	}
+
 	private func configuration() {
 		let api = API()
 		self.statusPanel.setTitle(title: "Downloading configuration", active: true)
@@ -228,6 +244,13 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 
 		UIApplication.shared.isNetworkActivityIndicatorVisible = true
 		api.query(activity: self.activity, page: page, perPage: perPage, filters: self.filters, completed: { (success, requests) in
+
+			self.refreshControl.endRefreshing()
+
+			if page == 1 {
+				let top = NSIndexPath(row: Foundation.NSNotFound, section: 0)
+				self.tableView.scrollToRow(at: top as IndexPath, at: .top, animated: false)
+			}
 
 			if self.cableChannel != nil && self.cableChannel!.isSubscribed {
 				self.statusPanel.setTitle(title: "Streaming requests realtime", active: true)
@@ -307,7 +330,11 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		let vc = ActivityViewSettingsController(activity: self.activity, filters: self.filters) { (filters) in
 			self.filters = filters
 			self.query()
+
+			let dvs = DefaultValues.fromFilters(filters: self.filters)
+			dvs.storeFilters(key: self.activity.permalink)
 		}
+
 		let nc = UINavigationController(rootViewController: vc)
 		nc.modalPresentationStyle = .currentContext
 
@@ -403,7 +430,7 @@ extension ActivityViewController {
 
 		log.debug("Opening channel \(self.activity.permalink)")
 		self.cableChannel = self.client.create("RequestChannel",
-		                                       identifier: [ "activity" : activity.permalink ],
+		                                       identifier: [ "activity": activity.permalink ],
 		                                       autoSubscribe: false,
 		                                       bufferActions: false)
 

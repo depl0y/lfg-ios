@@ -10,6 +10,7 @@ import UIKit
 import RealmSwift
 import SwiftyBeaver
 import Eureka
+// import GoogleMobileAds
 
 let log = SwiftyBeaver.self
 
@@ -33,6 +34,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UINavigationControllerDel
 
 		console.format = "$DHH:mm:ss$d $L [$N:$l] $M"
 		log.addDestination(console)
+
+		// GADMobileAds.configure(withApplicationID: "ca-app-pub-5982053360792545~3042833103")
 
 		self.window = UIWindow()
 

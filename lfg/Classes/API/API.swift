@@ -106,7 +106,16 @@ class API {
 			} else if key == -3 {
 				realKey = "language"
 			}
-			parameters[realKey] = value
+
+			if let valueArray = value as? [Int], valueArray.count == 2 {
+				let dict = [
+					"from": valueArray[0],
+					"to": valueArray[1]
+				]
+				parameters[realKey] = dict
+			} else {
+				parameters[realKey] = value
+			}
 		}
 
 		log.debug("POST \(url) \(parameters)")

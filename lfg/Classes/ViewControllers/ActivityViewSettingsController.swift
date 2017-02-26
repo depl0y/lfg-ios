@@ -52,14 +52,6 @@ class ActivityViewSettingsController: FormViewController {
 				}.cellSetup { _, row in
 					row.value = self.activity.subscribe
 			}
-			<<< SwitchRow("ANONYMIZE") { row in
-				row.title = "Anonymize requests"
-				row.value = AppDelegate.anonymize
-			}.onChange { row in
-				if let value = row.value {
-					AppDelegate.anonymize = value
-				}
-			}
 	}
 
 	private func setupDefaultFilters() {
@@ -83,7 +75,7 @@ class ActivityViewSettingsController: FormViewController {
 			row.title = "LFG/LFM"
 			row.options = [ "LFG", "LFM" ]
 			if let mode = self.filters[-2] as? String {
-				row.value = mode
+				row.value = mode.uppercased()
 			}
 			_ = row.onPresent({ (_, svc) in
 				svc.selectableRowCellUpdate = { cell, _ in
@@ -146,7 +138,7 @@ class ActivityViewSettingsController: FormViewController {
 					}
 				case .Number:
 					if let sliderRow = row as? SliderRow, sliderRow.value != nil, Int(sliderRow.value!) != field.min {
-						self.filters[field.lid] = sliderRow.value!
+						self.filters[field.lid] = [ Int(sliderRow.value!), field.max ]
 					}
 				case .Option:
 					if field.displayAsCheckboxes {
@@ -190,11 +182,11 @@ class ActivityViewSettingsController: FormViewController {
 							row.steps = UInt(field.max - field.min)
 							row.value = row.minimumValue
 							row.displayValueFor = {
-								return String(Int($0!))
+								return "> \(Int($0!))"
 							}
 
-							if let value = self.filters[field.lid] as? Int {
-								row.value = Float(value)
+							if let value = self.filters[field.lid] as? [Int] {
+								row.value = Float(value[0])
 							}
 						}
 						section.append(row)

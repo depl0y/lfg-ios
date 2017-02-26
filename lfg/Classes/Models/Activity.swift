@@ -55,6 +55,7 @@ public class Activity: Object, Mappable, ValueFinder {
 		return "permalink"
 	}
 
+
 	public func mapping(map: Map) {
 		lid <- map["id"]
 		name <- map["name"]

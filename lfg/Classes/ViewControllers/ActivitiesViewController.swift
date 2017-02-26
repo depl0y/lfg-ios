@@ -9,25 +9,27 @@
 import UIKit
 import PureLayout
 import RealmSwift
-//import FontAwesome
 import FontAwesome_swift
 import SDWebImage
+import SwiftMessages
+//import GoogleMobileAds
 
 class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, PureLayoutSetup {
 
 	let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
-
 	let refreshControl = UIRefreshControl()
+	var noResultsView = NoResultsView()
 
 	var activities = [Activity]()
 	var upcomingActivities = [Activity]()
-	// var fetchedActivities = [Activity]()
 
 	var sortPopular = false
 	var margin: CGFloat = 10
 	var columns: CGFloat = 2
 
 	var isLoading = false
+
+	// var bannerView = GADBannerView(forAutoLayout: ())
 
 	public var selectionChanged: ((_ activity: Activity) -> Void)?
 
@@ -38,6 +40,7 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 
 		self.view.addSubview(self.collectionView)
 		self.collectionView.addSubview(refreshControl)
+		// self.view.addSubview(self.bannerView)
 
 		self.setupConstraints()
 		self.configureViews()
@@ -46,22 +49,40 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		self.loadActivities {
 			self.refresh(sender: self)
 		}
+
+		//self.showSortingNotification()
+
 	}
 
 	override func viewWillLayoutSubviews() {
-		log.debug("Will layout")
 		self.collectionView.collectionViewLayout.invalidateLayout()
 	}
 
 	func setupConstraints() {
-		self.collectionView.autoPinEdgesToSuperviewEdges()
+		//		self.bannerView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .top)
+		//		self.bannerView.autoSetDimension(.height, toSize: 50)
 
+		/*
+		self.collectionView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .bottom)
+		self.collectionView.autoPinEdge(.bottom, to: .top, of: self.bannerView)
+		*/
+
+		self.collectionView.autoPinEdgesToSuperviewEdges()
 	}
 
 	func configureViews() {
 
 		self.view.backgroundColor = UIColor(netHex: 0xf6f7f9)
+/*
+		self.bannerView.adUnitID = "ca-app-pub-5982053360792545/5996299508"
+		self.bannerView.rootViewController = self
+		self.bannerView.adSize = kGADAdSizeSmartBannerPortrait
 
+		let bannerRequest = GADRequest()
+		bannerRequest.testDevices = [ kGADSimulatorID ]
+
+		self.bannerView.load(bannerRequest)
+*/
 		self.collectionView.backgroundColor = UIColor.clear
 		self.collectionView.dataSource = self
 		self.collectionView.delegate = self
@@ -72,6 +93,11 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		self.collectionView.register(UICollectionReusableView.self,
 		                             forSupplementaryViewOfKind: UICollectionElementKindSectionHeader,
 		                             withReuseIdentifier: "other-header")
+
+		self.collectionView.backgroundView = self.noResultsView
+
+		self.noResultsView.setTitle(title: "Loading, please wait")
+		self.noResultsView.setActive(active: true)
 
 		guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
 		flowLayout.minimumInteritemSpacing = margin
@@ -85,14 +111,12 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		let attributes = [NSFontAttributeName: UIFont.fontAwesome(ofSize: 16)] as [String: Any]
 		sortButton.setTitleTextAttributes(attributes, for: .normal)
 		sortButton.title = String.fontAwesomeIcon(name: .sortAmountDesc)
-
 		self.navigationItem.rightBarButtonItem = sortButton
 
-		let deleteButton = UIBarButtonItem(title: "", style: .plain, target: self, action: #selector(self.removeItem(sender:)))
-		//deleteButton.setTitleTextAttributes(attributes, for: .normal)
-		//deleteButton.title = String.fontAwesomeIcon(name: .trash)
-
-		self.navigationItem.leftBarButtonItem = deleteButton
+		let settingsButton = UIBarButtonItem(title: "S", style: .plain, target: self, action: #selector(self.openSettings))
+		settingsButton.setTitleTextAttributes(attributes, for: .normal)
+		settingsButton.title = String.fontAwesomeIcon(name: .cogs)
+		self.navigationItem.leftBarButtonItem = settingsButton
 
 		let image = UIImage(named: "white-logo")
 		let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 40, height: 32))
@@ -106,108 +130,22 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		// Dispose of any resources that can be recreated.
 	}
 
+	func openSettings() {
+		let vc = SettingsViewController()
+		let nc = UINavigationController(rootViewController: vc)
+		nc.modalPresentationStyle = .currentContext
+		self.navigationController?.present(nc, animated: true, completion: nil)
+	}
+
 	override func viewWillAppear(_ animated: Bool) {
-	}
-
-	func numberOfSections(in collectionView: UICollectionView) -> Int {
-		return 2
-	}
-
-	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		if section == 0 {
-			return self.activities.count
-		} else {
-			return self.upcomingActivities.count
-		}
-	}
-
-	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "activity-cell", for: indexPath) as? ActivityCell {
-			if indexPath.section == 0 {
-				let activity = self.activities[indexPath.row]
-				cell.activity = activity
-			} else {
-				let activity = self.upcomingActivities[indexPath.row]
-				cell.activity = activity
-			}
-
-			return cell
-
-		} else {
-			let c = collectionView.dequeueReusableCell(withReuseIdentifier: "activity-cell", for: indexPath)
-			return c
-		}
-	}
-
-	func collectionView(_ collectionView: UICollectionView,
-	                    layout collectionViewLayout: UICollectionViewLayout,
-	                    sizeForItemAt indexPath: IndexPath) -> CGSize {
-
-		if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-			let marginsAndInsets = flowLayout.sectionInset.left + flowLayout.sectionInset.right + flowLayout.minimumInteritemSpacing * (2 - 1)
-			let itemWidth = (collectionView.bounds.size.width - marginsAndInsets) / 2
-
-			let ratio: CGFloat = 1.7180851064
-			let itemHeight = (itemWidth / ratio) + 18
-			return CGSize(width: itemWidth, height: itemHeight)
-		} else {
-			return CGSize(width: 100, height: 100)
-		}
 
 	}
 
-	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-
-		let activity = (indexPath.section == 0) ? self.activities[indexPath.row] : self.upcomingActivities[indexPath.row]
-
-		if self.selectionChanged != nil {
-			self.selectionChanged!(activity)
-		} else {
-			let vc = ActivityViewController(activity: activity)
-			self.navigationController?.pushViewController(vc, animated: true)
-		}
+	override func viewDidAppear(_ animated: Bool) {
 	}
 
-	func collectionView(_ collectionView: UICollectionView,
-	                    viewForSupplementaryElementOfKind kind: String,
-	                    at indexPath: IndexPath) -> UICollectionReusableView {
-
-		log.debug("Creating header")
-		if kind == UICollectionElementKindSectionHeader && indexPath.section == 1 {
-			if let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader,
-			                                                                withReuseIdentifier: "header-cell",
-			                                                                for: indexPath) as? ActivitySectionHeader {
-				header.setTitle(title: "UPCOMING RELEASES")
-				return header
-			} else {
-				return UICollectionReusableView()
-			}
-		} else {
-			return UICollectionReusableView()
-		}
+	private func showSortingNotification() {
 	}
-
-	func collectionView(_ collectionView: UICollectionView,
-	                    layout collectionViewLayout: UICollectionViewLayout,
-	                    referenceSizeForHeaderInSection section: Int) -> CGSize {
-		if section == 1 {
-			return CGSize(width:collectionView.frame.size.width, height:30.0)
-		} else {
-			return CGSize.zero
-		}
-	}
-
-	func collectionView(_ collectionView: UICollectionView, shouldUpdateFocusIn context: UICollectionViewFocusUpdateContext) -> Bool {
-		return true
-	}
-
-	/*
-	func collectionView(collectionView: UICollectionView,
-	layout collectionViewLayout: UICollectionViewLayout,
-	referenceSizeForHeaderInSection section: Int) -> CGSize {
-	return CGSize(width: 300, height: 30)
-	}
-	*/
 
 	override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
 		super.viewWillTransition(to: size, with: coordinator)
@@ -221,32 +159,31 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		let api = API()
 		UIApplication.shared.isNetworkActivityIndicatorVisible = true
 
+		self.noResultsView.setTitle(title: "Loading, please wait")
+		self.noResultsView.setActive(active: true)
+		self.isLoading = true
+
 		api.activities { (success) in
 			UIApplication.shared.isNetworkActivityIndicatorVisible = false
+			self.noResultsView.setActive(active: false)
+			self.isLoading = false
+
 			if success {
 				self.loadActivities {
 					self.refreshControl.endRefreshing()
 				}
 			} else {
+				self.noResultsView.setTitle(title: "Failed loading games")
+
 				self.refreshControl.endRefreshing()
 			}
 		}
 	}
 
-	@objc private func removeItem(sender: Any) {
-		/*
-		let previousActivities = Array(self.activities)
-
-		if self.activities.count > 0 {
-		self.activities.remove(at: 0)
-		}
-
-		self.insertActivities(previousActivities: previousActivities, newActivities: self.activities) { }
-		*/
-	}
-
 	@objc private func toggleSort(sender: Any) {
 		self.sortPopular = !self.sortPopular
+
+		self.showSortingNotification()
 
 		if self.sortPopular {
 			self.navigationItem.rightBarButtonItem!.title = String.fontAwesomeIcon(name: .sortAmountAsc)
@@ -362,6 +299,8 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 		}
 
 		log.verbose("Loading activities")
+		self.noResultsView.setTitle(title: "Loading games")
+		self.noResultsView.setActive(active: true)
 
 		self.isLoading = true
 
@@ -382,5 +321,120 @@ class ActivitiesViewController: UIViewController, UICollectionViewDataSource, UI
 								self.isLoading = false
 								completed()
 		})
+	}
+}
+
+extension ActivitiesViewController {
+	func numberOfSections(in collectionView: UICollectionView) -> Int {
+		return 2
+	}
+
+	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+
+		if self.activities.count == 0 {
+			self.collectionView.backgroundView?.isHidden = false
+
+			if self.isLoading {
+				self.noResultsView.setTitle(title: "Loading, please wait")
+				self.noResultsView.setActive(active: true)
+			} else {
+				self.noResultsView.setTitle(title: "No requests found")
+			}
+
+			self.noResultsView.setActive(active: self.isLoading)
+
+		} else {
+			self.collectionView.backgroundView?.isHidden = true
+		}
+
+		if section == 0 {
+			return self.activities.count
+		} else {
+			return self.upcomingActivities.count
+		}
+	}
+
+	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+		if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "activity-cell", for: indexPath) as? ActivityCell {
+			if indexPath.section == 0 {
+				let activity = self.activities[indexPath.row]
+				cell.activity = activity
+			} else {
+				let activity = self.upcomingActivities[indexPath.row]
+				cell.activity = activity
+			}
+
+			return cell
+
+		} else {
+			let c = collectionView.dequeueReusableCell(withReuseIdentifier: "activity-cell", for: indexPath)
+			return c
+		}
+	}
+
+	func collectionView(_ collectionView: UICollectionView,
+	                    layout collectionViewLayout: UICollectionViewLayout,
+	                    sizeForItemAt indexPath: IndexPath) -> CGSize {
+
+		if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+			let marginsAndInsets = flowLayout.sectionInset.left + flowLayout.sectionInset.right + flowLayout.minimumInteritemSpacing * (2 - 1)
+			let itemWidth = (collectionView.bounds.size.width - marginsAndInsets) / 2
+
+			let ratio: CGFloat = 1.7180851064
+			let itemHeight = (itemWidth / ratio) + 18
+			return CGSize(width: itemWidth, height: itemHeight)
+		} else {
+			return CGSize(width: 100, height: 100)
+		}
+
+	}
+
+	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
+		let activity = (indexPath.section == 0) ? self.activities[indexPath.row] : self.upcomingActivities[indexPath.row]
+
+		if self.selectionChanged != nil {
+			self.selectionChanged!(activity)
+		} else {
+			let vc = ActivityViewController(activity: activity)
+			self.navigationController?.pushViewController(vc, animated: true)
+		}
+	}
+
+	func collectionView(_ collectionView: UICollectionView,
+	                    viewForSupplementaryElementOfKind kind: String,
+	                    at indexPath: IndexPath) -> UICollectionReusableView {
+
+		log.debug("Creating header")
+		if kind == UICollectionElementKindSectionHeader && indexPath.section == 1 {
+			if let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader,
+			                                                                withReuseIdentifier: "header-cell",
+			                                                                for: indexPath) as? ActivitySectionHeader {
+				header.setTitle(title: "UPCOMING RELEASES")
+				return header
+			} else {
+				return UICollectionReusableView()
+			}
+		} else {
+			return UICollectionReusableView()
+		}
+	}
+
+	func collectionView(_ collectionView: UICollectionView,
+	                    layout collectionViewLayout: UICollectionViewLayout,
+	                    referenceSizeForHeaderInSection section: Int) -> CGSize {
+		if section == 1 {
+			if self.upcomingActivities.count > 0 {
+				return CGSize(width:collectionView.frame.size.width, height:30.0)
+			} else {
+				return CGSize.zero
+			}
+		} else {
+			return CGSize.zero
+		}
+	}
+
+	func collectionView(_ collectionView: UICollectionView, shouldUpdateFocusIn context: UICollectionViewFocusUpdateContext) -> Bool {
+		return true
 	}
 }

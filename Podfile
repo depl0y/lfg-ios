@@ -12,7 +12,7 @@ target 'lfg' do
   pod 'ActionCableClient'
   pod 'SwiftyBeaver'
   pod 'Eureka', :git => 'https://github.com/xmartlabs/Eureka.git', :branch => 'master'
-  pod 'JKNotificationPanel'
+  pod 'SwiftMessages'
   pod 'FontAwesome.swift'
   pod 'TTRangeSlider'
   pod 'DateToolsSwift', :git => 'https://github.com/MatthewYork/DateTools.git'

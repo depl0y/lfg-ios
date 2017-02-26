@@ -10,7 +10,6 @@ PODS:
   - Fakery (2.0.0)
   - FontAwesome.swift (1.0.0)
   - ionicons (2.0.3)
-  - JKNotificationPanel (1.0.0)
   - ObjectMapper (2.2.2)
   - PureLayout (3.0.2)
   - Realm (2.4.2):
@@ -23,6 +22,7 @@ PODS:
   - SDWebImage/Core (3.8.2)
   - Starscream (2.0.3)
   - SwiftLint (0.16.1)
+  - SwiftMessages (3.1.5)
   - SwiftyBeaver (1.1.1)
   - TTRangeSlider (1.0.5)
 
@@ -35,12 +35,12 @@ DEPENDENCIES:
   - Fakery
   - FontAwesome.swift
   - ionicons
-  - JKNotificationPanel
   - ObjectMapper
   - PureLayout
   - RealmSwift
   - SDWebImage (~> 3.8)
   - SwiftLint
+  - SwiftMessages
   - SwiftyBeaver
   - TTRangeSlider
 
@@ -68,7 +68,6 @@ SPEC CHECKSUMS:
   Fakery: 97b99c23937d2e025d9135c75e2b17351ccd5031
   FontAwesome.swift: 2d32a3d62195343c2004b7c9043294ed2948553a
   ionicons: ec1e86e6c3316bd9942a7f024080dd75c70dd6a5
-  JKNotificationPanel: 2ed551f072be7f54e23a8c2526149c69ab23da9a
   ObjectMapper: 9e385c2295bcc4e16eabbcfc85db801442bba545
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Realm: d27b758e12d62a3371879a065d4c40aa212c5a54
@@ -76,9 +75,10 @@ SPEC CHECKSUMS:
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
   Starscream: 3fdd5c277e57cca6b5c406d274e3f34a7c88f2ce
   SwiftLint: b8b683208cc09640898f16318a7a452274e91f61
+  SwiftMessages: bb85d7c30e85256f9367214b0907e1f409e1870a
   SwiftyBeaver: 2b68694df862381235e32bcfc4ec991e26bf131d
   TTRangeSlider: 2f2ce4a33b32bb323c6575b9f5161c4664459c58
 
-PODFILE CHECKSUM: ad1a453ee4bfd4905304df544db6be22ad87da1c
+PODFILE CHECKSUM: bbf31ce1d98c46100444331aba2637d0413e01bf
 
 COCOAPODS: 1.2.0

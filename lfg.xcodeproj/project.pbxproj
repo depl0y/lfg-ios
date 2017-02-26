@@ -55,6 +55,8 @@
 		AB2278CA1E5ECAB700C64AD8 /* StatusPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB22789A1E5ECAB700C64AD8 /* StatusPanel.swift */; };
 		AB2278CB1E5ECAB700C64AD8 /* TitleSeparator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB22789B1E5ECAB700C64AD8 /* TitleSeparator.swift */; };
 		AB2278CD1E5ECB3F00C64AD8 /* IconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2278CC1E5ECB3F00C64AD8 /* IconManager.swift */; };
+		AB3443401E60C0CE0023C761 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB34433F1E60C0CE0023C761 /* SettingsViewController.swift */; };
+		AB3443421E62A9400023C761 /* DefaultValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3443411E62A9400023C761 /* DefaultValue.swift */; };
 		AB4A41F41E4AEDF900EB43C9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4A41F31E4AEDF900EB43C9 /* AppDelegate.swift */; };
 		AB4A41F91E4AEDF900EB43C9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB4A41F71E4AEDF900EB43C9 /* Main.storyboard */; };
 		AB4A41FB1E4AEDF900EB43C9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB4A41FA1E4AEDF900EB43C9 /* Assets.xcassets */; };
@@ -113,6 +115,8 @@
 		AB22789A1E5ECAB700C64AD8 /* StatusPanel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusPanel.swift; sourceTree = "<group>"; };
 		AB22789B1E5ECAB700C64AD8 /* TitleSeparator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleSeparator.swift; sourceTree = "<group>"; };
 		AB2278CC1E5ECB3F00C64AD8 /* IconManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconManager.swift; sourceTree = "<group>"; };
+		AB34433F1E60C0CE0023C761 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		AB3443411E62A9400023C761 /* DefaultValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultValue.swift; sourceTree = "<group>"; };
 		AB4A41F01E4AEDF900EB43C9 /* lfg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = lfg.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB4A41F31E4AEDF900EB43C9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AB4A41F81E4AEDF900EB43C9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -258,6 +262,7 @@
 			children = (
 				AB2278771E5ECAB700C64AD8 /* Activity.swift */,
 				AB2278781E5ECAB700C64AD8 /* ActivityGroup.swift */,
+				AB3443411E62A9400023C761 /* DefaultValue.swift */,
 				AB2278791E5ECAB700C64AD8 /* Field.swift */,
 				AB22787A1E5ECAB700C64AD8 /* FieldGroup.swift */,
 				AB22787B1E5ECAB700C64AD8 /* FieldOption.swift */,
@@ -303,6 +308,7 @@
 				AB2278901E5ECAB700C64AD8 /* NoActivitySelectedViewController.swift */,
 				AB2278911E5ECAB700C64AD8 /* PureLayoutSetup.swift */,
 				AB2278921E5ECAB700C64AD8 /* RequestViewController.swift */,
+				AB34433F1E60C0CE0023C761 /* SettingsViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -541,6 +547,7 @@
 				AB2278C51E5ECAB700C64AD8 /* ActivitySectionHeader.swift in Sources */,
 				AB2278A01E5ECAB700C64AD8 /* CreateRequestResponse.swift in Sources */,
 				AB22789C1E5ECAB700C64AD8 /* API.swift in Sources */,
+				AB3443421E62A9400023C761 /* DefaultValue.swift in Sources */,
 				AB2278B31E5ECAB700C64AD8 /* DataTypes.swift in Sources */,
 				AB2278CA1E5ECAB700C64AD8 /* StatusPanel.swift in Sources */,
 				AB2278A61E5ECAB700C64AD8 /* Ago.swift in Sources */,
@@ -558,6 +565,7 @@
 				AB2278A21E5ECAB700C64AD8 /* RemoveRequestResponse.swift in Sources */,
 				AB2278B01E5ECAB700C64AD8 /* FieldValue.swift in Sources */,
 				AB4A41F41E4AEDF900EB43C9 /* AppDelegate.swift in Sources */,
+				AB3443401E60C0CE0023C761 /* SettingsViewController.swift in Sources */,
 				AB2278BE1E5ECAB700C64AD8 /* ActivityViewSettingsController.swift in Sources */,
 				AB2278BB1E5ECAB700C64AD8 /* ValueFinderTransformer.swift in Sources */,
 				AB22789E1E5ECAB700C64AD8 /* ActivitiesResponse.swift in Sources */,
