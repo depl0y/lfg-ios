@@ -27,7 +27,7 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 
 	public var playerSeparator = TitleSeparator()
 
-	public var separatorView = UIView()
+	public var separatorView = ShadowSeparatorView()
 
 	private var timestampTimer: Timer?
 
@@ -89,15 +89,14 @@ class RequestTableViewCell: UITableViewCell, PureLayoutSetup {
 		self.groupLabel.autoPinEdge(.top, to: .bottom, of: self.playerLabel, withOffset: 18)
 		self.groupLabel.autoMatch(.width, to: .width, of: self, withMultiplier: 0.5)
 		self.groupLabel.autoSetDimension(.height, toSize: 20)
-		self.groupLabel.autoPinEdge(.bottom, to: .bottom, of: self, withOffset: (cellPadding + 8) * -1)
+		self.groupLabel.autoPinEdge(.bottom, to: .bottom, of: self, withOffset: (cellPadding + 18) * -1)
 
 		//		self.booleansView.autoPinEdge(.left, to: .right, of: self.groupLabel, withOffset: 2)
 		self.booleansView.autoPinEdge(.right, to: .right, of: self, withOffset: cellPadding * -1)
 		self.booleansView.autoPinEdge(.top, to: .bottom, of: self.playerLabel, withOffset: 10)
 
 		self.separatorView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .top)
-		self.separatorView.autoSetDimension(.height, toSize: 2)
-		self.separatorView.backgroundColor = UIColor(netHex: 0xe9e9e9)
+		self.separatorView.autoSetDimension(.height, toSize: 10)
 	}
 
 	func configureViews() {

@@ -28,22 +28,24 @@ public class DefaultValues: NSObject, NSCoding {
 
 	public func storeFilters(key: String) {
 		let totalKey = "filters.\(key)"
-
-		let data = NSKeyedArchiver.archivedData(withRootObject: self)
-		UserDefaults.standard.set(data, forKey: totalKey)
-		UserDefaults.standard.synchronize()
+		self.store(key: totalKey)
 	}
 
-	public static func getFilters(key: String) -> DefaultValues? {
-		let totalKey = "filters.\(key)"
-		
-		if let data = UserDefaults.standard.object(forKey: totalKey) as? Data {
-			if let object = NSKeyedUnarchiver.unarchiveObject(with: data) as? DefaultValues {
-				return object
+	public func storeDefaults(key: String) {
+		let totalKey = "defaults.\(key)"
+		self.store(key: totalKey)
+	}
+
+	public func toDefaults() -> [String: Any] {
+		var result = [String: Any]()
+
+		self.values.forEach { (dv) in
+			if let value = dv.toDefault() as? (String, Any) {
+				result[value.0] = value.1
 			}
 		}
 
-		return nil
+		return result
 	}
 
 	public func toFilters() -> [Int: Any] {
@@ -56,11 +58,51 @@ public class DefaultValues: NSObject, NSCoding {
 		return result
 	}
 
+	private func store(key: String) {
+		let data = NSKeyedArchiver.archivedData(withRootObject: self)
+		UserDefaults.standard.set(data, forKey: key)
+		UserDefaults.standard.synchronize()
+	}
+
+	public static func getFilters(key: String) -> DefaultValues? {
+		let totalKey = "filters.\(key)"
+		return self.get(key: totalKey)
+	}
+
+	public static func getDefaults(key: String) -> DefaultValues? {
+		let totalKey = "defaults.\(key)"
+
+		return self.get(key: totalKey)
+	}
+
+	private static func get(key: String) -> DefaultValues? {
+		if let data = UserDefaults.standard.object(forKey: key) as? Data {
+			if let object = NSKeyedUnarchiver.unarchiveObject(with: data) as? DefaultValues {
+				return object
+			}
+		}
+
+		return nil
+	}
+
+	public static func fromDefaults(defaults: [String: Any]) -> DefaultValues {
+		let result = DefaultValues()
+
+		defaults.forEach { (key, value) in
+			let df = DefaultValue(idString: key, value: value)
+			if df.value != nil {
+				result.values.append(df)
+			}
+		}
+
+		return result
+	}
+
 	public static func fromFilters(filters: [Int: Any]) -> DefaultValues {
 		let result = DefaultValues()
 
 		filters.forEach { (key, value) in
-			let df = DefaultValue(id: key, value: value)
+			let df = DefaultValue(identifier: key, value: value)
 			if df.value != nil {
 				result.values.append(df)
 			}
@@ -72,6 +114,18 @@ public class DefaultValues: NSObject, NSCoding {
 	public static func deleteAllFilters() {
 		let valueKeys = UserDefaults.standard.dictionaryRepresentation().keys.filter { (key) -> Bool in
 			return key.hasPrefix("filters.")
+		}
+
+		valueKeys.forEach {
+			log.debug("Key: \($0)")
+			UserDefaults.standard.removeObject(forKey: $0)
+		}
+		UserDefaults.standard.synchronize()
+	}
+
+	public static func deleteAllDefaults() {
+		let valueKeys = UserDefaults.standard.dictionaryRepresentation().keys.filter { (key) -> Bool in
+			return key.hasPrefix("defaults.")
 		}
 
 		valueKeys.forEach {
@@ -95,11 +149,20 @@ public class DefaultValue: NSObject, NSCoding {
 		super.init()
 	}
 
-	init(id: Int, value: Any) {
+	init(idString: String, value: Any) {
 		super.init()
-		
-		self.identifier = "\(id)"
+		self.identifier = idString
+		self.setValue(value: value)
+	}
 
+	init(identifier: Int, value: Any) {
+		super.init()
+
+		self.identifier = "\(identifier)"
+		self.setValue(value: value)
+	}
+
+	private func setValue(value: Any) {
 		if let v = value as? String {
 			self.stringValue = v
 		} else if let v = value as? Bool {
@@ -177,6 +240,13 @@ public class DefaultValue: NSObject, NSCoding {
 			}
 		}
 
+		return nil
+	}
+
+	public func toDefault() -> (key: String, value: Any)? {
+		if self.value != nil {
+			return (self.identifier, self.value!)
+		}
 		return nil
 	}
 

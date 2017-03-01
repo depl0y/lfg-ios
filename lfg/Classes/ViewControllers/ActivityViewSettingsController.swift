@@ -52,6 +52,17 @@ class ActivityViewSettingsController: FormViewController {
 				}.cellSetup { _, row in
 					row.value = self.activity.subscribe
 			}
+			<<< SwitchRow("FAVORITE") { row in
+				row.title = "Favorite"
+				}.onChange { row in
+					if row.value == true {
+						self.activity.enableFavorite()
+					} else {
+						self.activity.disableFavorite()
+					}
+				}.cellSetup { _, row in
+					row.value = self.activity.favorite
+		}
 	}
 
 	private func setupDefaultFilters() {
@@ -172,6 +183,11 @@ class ActivityViewSettingsController: FormViewController {
 						let row = SwitchRow(field.permalink) { row in
 							row.title = field.name
 						}
+
+						if let value = self.filters[field.lid] as? Bool {
+							row.value = value
+						}
+
 						section.append(row)
 					} else if field.dataType == .Number {
 						let row = SliderRow(field.permalink) { row in

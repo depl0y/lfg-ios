@@ -26,18 +26,29 @@ public class ActivitySectionHeader: UICollectionReusableView {
 
 	override init(frame: CGRect) {
 		super.init(frame: frame)
+
 		self.backgroundColor = UIColor.clear
 		self.addSubview(titleLabel)
-		self.titleLabel.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 10, left: self.padding, bottom: 0, right: self.padding * -1))
+
+		self.titleLabel.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, left: self.padding, bottom: 0, right: self.padding * -1),
+		                                             excludingEdge: .top)
+		self.titleLabel.autoSetDimension(.height, toSize: 20)
+
 		self.titleLabel.textColor = color
 		self.titleLabel.font = UIFont.latoBoldWithSize(size: 20)
 	}
 
 	public init() {
 		super.init(frame: CGRect.zero)
+
 		self.backgroundColor = UIColor.clear
 		self.addSubview(titleLabel)
-		self.titleLabel.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 10, left: self.padding, bottom: 0, right: self.padding * -1))
+
+		self.titleLabel.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, left: self.padding, bottom: 0, right: self.padding * -1),
+		                                             excludingEdge: .top)
+
+		self.titleLabel.autoSetDimension(.height, toSize: 20)
+
 		self.titleLabel.textColor = color
 		self.titleLabel.font = UIFont.latoBoldWithSize(size: 20)
 	}

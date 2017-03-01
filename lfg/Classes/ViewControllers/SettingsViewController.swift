@@ -66,6 +66,9 @@ public class SettingsViewController: FormViewController {
 					cell.backgroundColor = UIColor.white
 					cell.textLabel?.textColor = UIColor.black
 					cell.textLabel?.textAlignment = .left
+				}.onCellSelection { _, _ in
+					DefaultValues.deleteAllDefaults()
+					self.displayMessage(title: "Done", message: "All your defaults have been removed.")
 			}
 
 			<<< ButtonRow("CLEAN_FILTERS") { row in
@@ -76,17 +79,8 @@ public class SettingsViewController: FormViewController {
 					cell.textLabel?.textAlignment = .left
 				}.onCellSelection { _, _ in
 					DefaultValues.deleteAllFilters()
-
-					self.displayMessage(title: "Done", message: "All your defined filters are removed.")
+					self.displayMessage(title: "Done", message: "All your defined filters have been removed.")
 			}
-			
-			<<< ButtonRow("CLEAN_CACHE") { row in
-				row.title = "Clean cache"
-				}.cellUpdate { cell, _ in
-					cell.backgroundColor = UIColor.white
-					cell.textLabel?.textColor = UIColor.black
-					cell.textLabel?.textAlignment = .left
-		}
 
 		form +++ Section("DEBUGGING")
 			<<< SwitchRow("ANONYMIZE") { row in

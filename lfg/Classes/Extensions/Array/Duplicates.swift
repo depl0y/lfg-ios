@@ -33,3 +33,28 @@ extension Array where Element: Equatable {
 		}
 	}
 }
+
+extension Array where Element: Activity {
+
+	mutating public func sortAlphabetically() {
+		self.sort { (lhs: Activity, rhs: Activity) -> Bool in
+			return lhs.name < rhs.name
+		}
+	}
+
+	mutating public func sortPopularity() {
+		self.sort { (lhs: Activity, rhs: Activity) -> Bool in
+			return lhs.popularity > rhs.popularity
+		}
+	}
+
+	mutating public func sortReleaseDate() {
+		self.sort { (lhs: Activity, rhs: Activity) -> Bool in
+			if lhs.releaseDate != nil && rhs.releaseDate != nil {
+				return lhs.releaseDate! < rhs.releaseDate!
+			} else {
+				return lhs.name < rhs.name
+			}
+		}
+	}
+}

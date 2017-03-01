@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB204E951E658F6E006F488B /* ShadowSeparatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB204E941E658F6E006F488B /* ShadowSeparatorView.swift */; };
 		AB22789C1E5ECAB700C64AD8 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB22785F1E5ECAB700C64AD8 /* API.swift */; };
 		AB22789E1E5ECAB700C64AD8 /* ActivitiesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2278621E5ECAB700C64AD8 /* ActivitiesResponse.swift */; };
 		AB22789F1E5ECAB700C64AD8 /* ActivityResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2278631E5ECAB700C64AD8 /* ActivityResponse.swift */; };
@@ -61,12 +62,15 @@
 		AB4A41F91E4AEDF900EB43C9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB4A41F71E4AEDF900EB43C9 /* Main.storyboard */; };
 		AB4A41FB1E4AEDF900EB43C9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB4A41FA1E4AEDF900EB43C9 /* Assets.xcassets */; };
 		AB4A41FE1E4AEDF900EB43C9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB4A41FC1E4AEDF900EB43C9 /* LaunchScreen.storyboard */; };
+		AB7544911E65F83400C4C8F1 /* ActivitySorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7544901E65F83400C4C8F1 /* ActivitySorting.swift */; };
+		AB7544931E66A09400C4C8F1 /* FavoriteActivityCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7544921E66A09400C4C8F1 /* FavoriteActivityCell.swift */; };
 		ABD3552E1E556D6700529AC5 /* Lato-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ABD3552C1E556D6700529AC5 /* Lato-Bold.ttf */; };
 		ABD3552F1E556D6700529AC5 /* Lato-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ABD3552D1E556D6700529AC5 /* Lato-Regular.ttf */; };
 		D29EB9A73A6C145E1882BEC6 /* Pods_lfg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAED4591C4EC09E53AE2B204 /* Pods_lfg.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AB204E941E658F6E006F488B /* ShadowSeparatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShadowSeparatorView.swift; sourceTree = "<group>"; };
 		AB22785F1E5ECAB700C64AD8 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		AB2278621E5ECAB700C64AD8 /* ActivitiesResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivitiesResponse.swift; sourceTree = "<group>"; };
 		AB2278631E5ECAB700C64AD8 /* ActivityResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityResponse.swift; sourceTree = "<group>"; };
@@ -123,6 +127,8 @@
 		AB4A41FA1E4AEDF900EB43C9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AB4A41FD1E4AEDF900EB43C9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AB4A41FF1E4AEDF900EB43C9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AB7544901E65F83400C4C8F1 /* ActivitySorting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ActivitySorting.swift; path = Other/ActivitySorting.swift; sourceTree = "<group>"; };
+		AB7544921E66A09400C4C8F1 /* FavoriteActivityCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoriteActivityCell.swift; sourceTree = "<group>"; };
 		ABD3552C1E556D6700529AC5 /* Lato-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Lato-Bold.ttf"; sourceTree = "<group>"; };
 		ABD3552D1E556D6700529AC5 /* Lato-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Lato-Regular.ttf"; sourceTree = "<group>"; };
 		B969099067711FE26ED9AC37 /* Pods-lfg.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-lfg.debug.xcconfig"; path = "Pods/Target Support Files/Pods-lfg/Pods-lfg.debug.xcconfig"; sourceTree = "<group>"; };
@@ -169,6 +175,7 @@
 				AB2278851E5ECAB700C64AD8 /* Transformers */,
 				AB22788A1E5ECAB700C64AD8 /* ViewControllers */,
 				AB2278931E5ECAB700C64AD8 /* Views */,
+				AB7544901E65F83400C4C8F1 /* ActivitySorting.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -319,9 +326,11 @@
 				AB2278941E5ECAB700C64AD8 /* ActivityCell.swift */,
 				AB2278951E5ECAB700C64AD8 /* ActivitySectionHeader.swift */,
 				AB2278961E5ECAB700C64AD8 /* DiscordInfoView.swift */,
+				AB7544921E66A09400C4C8F1 /* FavoriteActivityCell.swift */,
 				AB2278971E5ECAB700C64AD8 /* KeyValueView.swift */,
 				AB2278981E5ECAB700C64AD8 /* NoResultsView.swift */,
 				AB2278991E5ECAB700C64AD8 /* RequestTableViewCell.swift */,
+				AB204E941E658F6E006F488B /* ShadowSeparatorView.swift */,
 				AB22789A1E5ECAB700C64AD8 /* StatusPanel.swift */,
 				AB22789B1E5ECAB700C64AD8 /* TitleSeparator.swift */,
 			);
@@ -543,6 +552,7 @@
 				AB2278AC1E5ECAB700C64AD8 /* ActivityGroup.swift in Sources */,
 				AB2278CB1E5ECAB700C64AD8 /* TitleSeparator.swift in Sources */,
 				AB2278AF1E5ECAB700C64AD8 /* FieldOption.swift in Sources */,
+				AB7544931E66A09400C4C8F1 /* FavoriteActivityCell.swift in Sources */,
 				AB2278B81E5ECAB700C64AD8 /* DatatypeTransformer.swift in Sources */,
 				AB2278C51E5ECAB700C64AD8 /* ActivitySectionHeader.swift in Sources */,
 				AB2278A01E5ECAB700C64AD8 /* CreateRequestResponse.swift in Sources */,
@@ -556,6 +566,7 @@
 				AB2278C11E5ECAB700C64AD8 /* NoActivitySelectedViewController.swift in Sources */,
 				AB2278A31E5ECAB700C64AD8 /* WebsocketResponse.swift in Sources */,
 				AB2278A41E5ECAB700C64AD8 /* SocketConnection.swift in Sources */,
+				AB7544911E65F83400C4C8F1 /* ActivitySorting.swift in Sources */,
 				AB2278C31E5ECAB700C64AD8 /* RequestViewController.swift in Sources */,
 				AB2278C21E5ECAB700C64AD8 /* PureLayoutSetup.swift in Sources */,
 				AB2278C61E5ECAB700C64AD8 /* DiscordInfoView.swift in Sources */,
@@ -581,6 +592,7 @@
 				AB2278C81E5ECAB700C64AD8 /* NoResultsView.swift in Sources */,
 				AB2278B11E5ECAB700C64AD8 /* Language.swift in Sources */,
 				AB2278A81E5ECAB700C64AD8 /* Hex.swift in Sources */,
+				AB204E951E658F6E006F488B /* ShadowSeparatorView.swift in Sources */,
 				AB2278BA1E5ECAB700C64AD8 /* ListTransformer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

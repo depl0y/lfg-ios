@@ -32,6 +32,8 @@ public class Activity: Object, Mappable, ValueFinder {
 	dynamic var discordInviteCode: String?
 	dynamic var discordServer: String?
 
+	dynamic var favorite: Bool = false
+
 	var groups = List<ActivityGroup>()
 	let fieldGroups = List<FieldGroup>()
 
@@ -54,7 +56,6 @@ public class Activity: Object, Mappable, ValueFinder {
 	public override static func primaryKey() -> String? {
 		return "permalink"
 	}
-
 
 	public func mapping(map: Map) {
 		lid <- map["id"]
@@ -187,6 +188,18 @@ public class Activity: Object, Mappable, ValueFinder {
 		}
 	}
 
+	public static func favorites() -> [Activity] {
+		do {
+			let realm = try Realm()
+
+			let t = realm.objects(Activity.self).filter(NSPredicate(format: "favorite == %@", NSNumber(value: true)))
+			log.debug("Results: \(t.count)")
+			return Array(t)
+		} catch {
+			return []
+		}
+	}
+
 	public static func all() -> [Activity] {
 		do {
 			let realm = try Realm()
@@ -194,6 +207,30 @@ public class Activity: Object, Mappable, ValueFinder {
 			return Array(t)
 		} catch {
 			return []
+		}
+	}
+
+	public func enableFavorite() {
+		do {
+			let realm = try Realm()
+
+			try realm.write {
+				self.favorite = true
+			}
+		} catch {
+			log.error("Could not write tot realm")
+		}
+	}
+
+	public func disableFavorite() {
+		do {
+			let realm = try Realm()
+
+			try realm.write {
+				self.favorite = false
+			}
+		} catch {
+			log.error("Could not write tot realm")
 		}
 	}
 }

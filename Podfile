@@ -19,6 +19,7 @@ target 'lfg' do
   pod 'ionicons'
   pod 'SDWebImage', '~>3.8'
   pod 'Fakery'
+  pod 'FTPopOverMenu'  
 end
 
 post_install do |installer|

@@ -13,12 +13,15 @@ import RealmSwift
 public class NewRequestViewController: FormViewController {
 
 	private var activity: Activity!
+	private var defaults: [String: Any]?
 
 	init(activity: Activity) {
 		super.init(nibName: nil, bundle: nil)
 
 		self.activity = activity
 		self.title = "New request"
+
+		self.defaults = DefaultValues.getDefaults(key: self.activity.permalink)?.toDefaults()
 	}
 
 	required public init?(coder aDecoder: NSCoder) {
@@ -51,7 +54,6 @@ public class NewRequestViewController: FormViewController {
 			row.title = "Platform"
 			row.options = Array(self.activity.groups)
 
-			row.value = self.activity.groups.first
 			_ = row.onPresent({ (_, svc) in
 				svc.enableDeselection = false
 				svc.selectableRowCellUpdate = { cell, row in
@@ -59,11 +61,14 @@ public class NewRequestViewController: FormViewController {
 				}
 
 			})
-			/*
-			if let groupId = self.filters[-1] as? Int {
-			row.value = self.activity.groups.filter(NSPredicate(format: "lid = %d", groupId)).first
+
+			if let optionId = self.defaults?["group"] as? Int {
+				row.value = self.activity.groups.filter(NSPredicate(format: "lid = %d", optionId)).first
 			}
-			*/
+
+			if row.value == nil {
+				row.value = row.options.first
+			}
 		}
 
 		let languageRow = PushRow<Language>("language") { row in
@@ -74,7 +79,6 @@ public class NewRequestViewController: FormViewController {
 				let languages = realm.objects(Language.self)
 				row.options = Array(languages)
 
-				row.value = languages.first
 				_ = row.onPresent({ (_, svc) in
 					svc.enableDeselection = false
 					svc.selectableRowCellUpdate = { cell, row in
@@ -83,11 +87,13 @@ public class NewRequestViewController: FormViewController {
 
 				})
 
-				/*
-				if let groupId = self.filters[-3] as? Int {
-				row.value = languages.filter(NSPredicate(format: "lid = %d", groupId)).first
+				if let optionId = self.defaults?["language"] as? Int {
+					row.value = languages.filter(NSPredicate(format: "lid = %d", optionId)).first
 				}
-				*/
+
+				if row.value == nil {
+					row.value = row.options.first
+				}
 			} catch {
 				log.error("Could not read from realm")
 			}
@@ -96,6 +102,10 @@ public class NewRequestViewController: FormViewController {
 		let usernameRow = AccountRow("username") { row in
 			row.title = "Username"
 			row.placeholder = "Xbox live tag/PSN username/etc"
+
+			if let value = self.defaults?["username"] as? String {
+				row.value = value
+			}
 		}
 
 		generalSection.append(lfRow)
@@ -132,6 +142,11 @@ public class NewRequestViewController: FormViewController {
 					let row = SwitchRow(field.permalink) { row in
 						row.title = field.name
 					}
+
+					if let value = self.defaults?[field.permalink] as? Bool {
+						row.value = value
+					}
+
 					section.append(row)
 				} else if field.dataType == .Number {
 					let row = SliderRow(field.permalink) { row in
@@ -144,6 +159,10 @@ public class NewRequestViewController: FormViewController {
 							return String(Int($0!))
 						}
 						row.steps = UInt(field.max - field.min)
+
+						if let value = self.defaults?[field.permalink] as? Int {
+							row.value = Float(value)
+						}
 					}
 					section.append(row)
 				} else  if field.dataType == .Option {
@@ -161,7 +180,13 @@ public class NewRequestViewController: FormViewController {
 							}
 						})
 
-						row.value = row.options.first
+						if let optionId = self.defaults?[field.permalink] as? Int {
+							row.value = field.options.filter(NSPredicate(format: "lid = %d", optionId)).first
+						}
+
+						if row.value == nil {
+							row.value = row.options.first
+						}
 					}
 					section.append(row)
 				} else if field.dataType == .Text {
@@ -170,6 +195,10 @@ public class NewRequestViewController: FormViewController {
 					let row = TextAreaRow(field.permalink) { row in
 						row.placeholder = (field.desc != nil) ? field.desc! : field.name
 						row.title = field.name
+
+						if let v = self.defaults?[field.permalink] as? String {
+							row.value = v
+						}
 					}
 					textSection.append(row)
 					self.form.append(textSection)
@@ -242,6 +271,9 @@ public class NewRequestViewController: FormViewController {
 		}
 
 		values["activity_id"] = self.activity.lid
+
+		let dv = DefaultValues.fromDefaults(defaults: values)
+		dv.storeDefaults(key: self.activity.permalink)
 
 		log.debug("\(values)")
 

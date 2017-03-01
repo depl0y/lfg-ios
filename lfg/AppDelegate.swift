@@ -51,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UINavigationControllerDel
 
 		do {
 			let config = Realm.Configuration(
-				schemaVersion: 3,
+				schemaVersion: 4,
 				migrationBlock: { _, oldSchemaVersion in
 					if oldSchemaVersion < 1 { }
 				}

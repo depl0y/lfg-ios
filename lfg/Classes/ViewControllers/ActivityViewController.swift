@@ -11,6 +11,7 @@ import ActionCableClient
 import RealmSwift
 import PureLayout
 import SafariServices
+import FTPopOverMenu
 
 class ActivityViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, PureLayoutSetup {
 
@@ -27,7 +28,6 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 
 	let tableView = UITableView()
 	let refreshControl = UIRefreshControl()
-
 
 	var discordInfoView: DiscordInfoView!
 	var statusPanel = StatusPanel()
@@ -134,11 +134,11 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 		self.addButton.setAttributedTitle(buttonTitle, for: .normal)
 		self.addButton.addTarget(self, action: #selector(self.addRequestButton), for: UIControlEvents.touchUpInside)
 
-		let settingsButton = UIBarButtonItem(title: "E", style: .plain, target: self, action: #selector(self.showSettings(sender:)))
+		let settingsButton = UIBarButtonItem(title: "E", style: .plain, target: self, action: #selector(self.showPopoverMenu(sender:event:)))
 
 		let attributes = [NSFontAttributeName: UIFont.fontAwesome(ofSize: 20)] as [String: Any]
 		settingsButton.setTitleTextAttributes(attributes, for: .normal)
-		settingsButton.title = String.fontAwesomeIcon(name: .search)
+		settingsButton.title = String.fontAwesomeIcon(name: .bars)
 
 		self.navigationItem.rightBarButtonItem = settingsButton
 		self.edgesForExtendedLayout = []
@@ -159,6 +159,35 @@ class ActivityViewController: UIViewController, UITableViewDataSource, UITableVi
 	}
 
 	func applicationWillEnterForeground() {
+	}
+
+	@objc private func showPopoverMenu(sender: UIView, event: UIEvent) {
+
+		let searchImage = UIImage.fontAwesomeIcon(name: .search, textColor: UIColor.white, size: CGSize(width: 20, height: 20))
+		let favoriteImage = UIImage.fontAwesomeIcon(name: self.activity.favorite ? .heart : .heartO,
+		                                            textColor: UIColor.white,
+		                                            size: CGSize(width: 20, height: 20))
+
+		let favoriteTitle = self.activity.favorite ? "Unfavorite" : "Favorite"
+
+		FTPopOverMenu.show(from: event,
+		                   withMenuArray:  ["Filters", favoriteTitle],
+		                   imageArray: [searchImage, favoriteImage],
+		                   doneBlock: { (index) in
+							if index == 0 {
+								self.showSettings(sender: sender)
+							} else if index == 1 {
+								if self.activity.favorite {
+									self.activity.disableFavorite()
+								} else {
+									self.activity.enableFavorite()
+								}
+							}
+
+		}) {
+			log.debug("Popover gone")
+		}
+
 	}
 
 	func scrollToTop() {
